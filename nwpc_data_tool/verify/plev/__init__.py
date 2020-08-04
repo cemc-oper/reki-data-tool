@@ -1,5 +1,6 @@
 import xarray as xr
 import numpy as np
+import pandas as pd
 
 from nwpc_data.grib.eccodes import load_field_from_file
 
@@ -49,14 +50,14 @@ def calculate_plev_stats(
         longitude=slice(0, 360),
     )
 
-    return xr.Dataset({
-        "rmse": np.sqrt(mse(domain_forecast_field, domain_analysis_field)),
-        "bias": bias(domain_forecast_field, domain_analysis_field),
-        "absolute_bias": absolute_bias(domain_forecast_field, domain_analysis_field),
-        "std": std(domain_forecast_field, domain_analysis_field),
-        "rmsem": rmsem(domain_forecast_field, domain_analysis_field),
-        "rmsep": rmsep(domain_forecast_field, domain_analysis_field),
-        "acc": acc(domain_forecast_field, domain_analysis_field, domain_climate_field),
+    return pd.DataFrame({
+        "rmse": [np.sqrt(mse(domain_forecast_field, domain_analysis_field)).values],
+        "bias": [bias(domain_forecast_field, domain_analysis_field).values],
+        "absolute_bias": [absolute_bias(domain_forecast_field, domain_analysis_field).values],
+        "std": [std(domain_forecast_field, domain_analysis_field).values],
+        "rmsem": [rmsem(domain_forecast_field, domain_analysis_field).values],
+        "rmsep": [rmsep(domain_forecast_field, domain_analysis_field).values],
+        "acc": [acc(domain_forecast_field, domain_analysis_field, domain_climate_field).values],
     })
 
 
