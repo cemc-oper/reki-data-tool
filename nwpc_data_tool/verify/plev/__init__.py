@@ -41,13 +41,13 @@ def calculate_plev_stats(
     )
 
     domain_analysis_field = analysis_field.sel(
-        latitude=slice(90, 20),
-        longitude=slice(0, 360),
+        latitude=slice(*domain[1::-1]),
+        longitude=slice(*domain[2:]),
     )
 
     domain_climate_field = climate_field.sel(
-        latitude=slice(90, 20),
-        longitude=slice(0, 360),
+        latitude=slice(*domain[1::-1]),
+        longitude=slice(*domain[2:]),
     )
 
     return pd.DataFrame({
