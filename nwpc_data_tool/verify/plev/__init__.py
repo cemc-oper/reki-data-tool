@@ -9,31 +9,43 @@ def calculate_plev_stats(
         parameter,
         level,
         domain,
-        forecast_data_path,
-        analysis_data_path,
-        climate_data_path,
+        forecast_data_path=None,
+        forecast_field=None,
+        analysis_data_path=None,
+        analysis_field=None,
+        climate_data_path=None,
+        climate_field=None,
 ):
-    forecast_field = load_field_from_file(
-        file_path=forecast_data_path,
-        parameter=parameter,
-        level_type="isobaricInhPa",
-        level=level
-    )
+    if forecast_field is None:
+        if forecast_data_path is None:
+            raise ValueError("forecast_field or forecast_data_path must be set")
+        forecast_field = load_field_from_file(
+            file_path=forecast_data_path,
+            parameter=parameter,
+            level_type="isobaricInhPa",
+            level=level
+        )
 
-    analysis_field = load_field_from_file(
-        file_path=analysis_data_path,
-        parameter=parameter,
-        level_type="isobaricInhPa",
-        level=level,
-    )
+    if analysis_field is None:
+        if analysis_data_path is None:
+            raise ValueError("analysis_field or analysis_data_path must be set")
+        analysis_field = load_field_from_file(
+            file_path=analysis_data_path,
+            parameter=parameter,
+            level_type="isobaricInhPa",
+            level=level,
+        )
 
-    climate_field = load_field_from_file(
-        file_path=climate_data_path,
-        parameter=parameter,
-        level_type="isobaricInhPa",
-        level=level,
-    )
-    climate_field["longitude"] = analysis_field.longitude
+    if climate_field is None:
+        if climate_data_path is None:
+            raise ValueError("climate_field or climate_data_path must be set")
+        climate_field = load_field_from_file(
+            file_path=climate_data_path,
+            parameter=parameter,
+            level_type="isobaricInhPa",
+            level=level,
+        )
+        climate_field["longitude"] = analysis_field.longitude
 
     domain_forecast_field = forecast_field.sel(
         latitude=slice(*domain[1::-1]),
