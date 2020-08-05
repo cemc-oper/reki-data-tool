@@ -2,50 +2,14 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 
-from nwpc_data.grib.eccodes import load_field_from_file
-
 
 def calculate_plev_stats(
-        parameter,
-        level,
+        forecast_field,
+        analysis_field,
+        climate_field,
         domain,
-        forecast_data_path=None,
-        forecast_field=None,
-        analysis_data_path=None,
-        analysis_field=None,
-        climate_data_path=None,
-        climate_field=None,
 ):
-    if forecast_field is None:
-        if forecast_data_path is None:
-            raise ValueError("forecast_field or forecast_data_path must be set")
-        forecast_field = load_field_from_file(
-            file_path=forecast_data_path,
-            parameter=parameter,
-            level_type="isobaricInhPa",
-            level=level
-        )
-
-    if analysis_field is None:
-        if analysis_data_path is None:
-            raise ValueError("analysis_field or analysis_data_path must be set")
-        analysis_field = load_field_from_file(
-            file_path=analysis_data_path,
-            parameter=parameter,
-            level_type="isobaricInhPa",
-            level=level,
-        )
-
-    if climate_field is None:
-        if climate_data_path is None:
-            raise ValueError("climate_field or climate_data_path must be set")
-        climate_field = load_field_from_file(
-            file_path=climate_data_path,
-            parameter=parameter,
-            level_type="isobaricInhPa",
-            level=level,
-        )
-        climate_field["longitude"] = analysis_field.longitude
+    climate_field["longitude"] = analysis_field.longitude
 
     domain_forecast_field = forecast_field.sel(
         latitude=slice(*domain[1::-1]),
