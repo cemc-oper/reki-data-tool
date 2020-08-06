@@ -30,7 +30,7 @@ def calculate_plev_stats(
 
     lats = llat[start_j:end_j, start_i:end_i]
 
-    return pd.DataFrame({
+    df = pd.DataFrame({
         "rmse": [np.sqrt(mse(domain_forecast_array, domain_analysis_array, lats))],
         "bias": [bias(domain_forecast_array, domain_analysis_array, lats)],
         "absolute_bias": [absolute_bias(domain_forecast_array, domain_analysis_array, lats)],
@@ -39,6 +39,11 @@ def calculate_plev_stats(
         "rmsep": [rmsep(domain_forecast_array, domain_analysis_array, lats)],
         "acc": [acc(domain_forecast_array, domain_analysis_array, domain_climate_array, lats)],
     })
+
+    if (df["rmse"] > 1000.0).item():
+        df = df[:] = -999
+
+    return df
 
 
 def mse(forecast_array, analysis_array, lats):
