@@ -1,7 +1,9 @@
 """
+使用 nwpc_data.grib.eccodes 中的 message 系列 API 加载要素场为 eccodes GRIB message，并进行计算。
+
 Notes
 -----
-Codes in this file are from GetPy, which is an inner project in NWPC.
+本文件中的代码来自 GetPy 项目，并有部分修改。GetPy 项目是目前仍属于 NWPC 的内部项目
 """
 import numpy as np
 import pandas as pd
