@@ -26,7 +26,7 @@ def calculate_plev_stats(
         longitude=slice(*domain[2:]),
     )
 
-    return pd.DataFrame({
+    df = pd.DataFrame({
         "rmse": [np.sqrt(mse(domain_forecast_field, domain_analysis_field)).values],
         "bias": [bias(domain_forecast_field, domain_analysis_field).values],
         "absolute_bias": [absolute_bias(domain_forecast_field, domain_analysis_field).values],
@@ -35,6 +35,11 @@ def calculate_plev_stats(
         "rmsep": [rmsep(domain_forecast_field, domain_analysis_field).values],
         "acc": [acc(domain_forecast_field, domain_analysis_field, domain_climate_field).values],
     })
+
+    if df["rmse"] > 1000.0:
+        df = df.replace(df, -999)
+
+    return df
 
 
 def mse(forecast_field, analysis_field):
