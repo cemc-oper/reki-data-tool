@@ -1,28 +1,45 @@
 import numpy as np
+import xarray as xr
 
 
-def mse(forecast_field, analysis_field, latitudes):
+def mse(
+        forecast_field: np.ndarray or xr.DataArray,
+        analysis_field: np.ndarray or xr.DataArray,
+        latitudes: np.ndarray or xr.DataArray
+) -> np.ndarray or xr.DataArray:
     result = np.sum(
         np.power(forecast_field - analysis_field, 2) * np.cos(latitudes * np.pi / 180.0)
     ) / np.sum(np.cos(latitudes * np.pi / 180.0))
     return result
 
 
-def bias(forecast_field, analysis_field, latitudes):
+def bias(
+        forecast_field: np.ndarray or xr.DataArray,
+        analysis_field: np.ndarray or xr.DataArray,
+        latitudes: np.ndarray or xr.DataArray
+) -> np.ndarray or xr.DataArray:
     result = np.sum(
         (forecast_field - analysis_field) * np.cos(latitudes * np.pi / 180.0)
     ) / np.sum(np.cos(latitudes * np.pi / 180.0))
     return result
 
 
-def absolute_bias(forecast_field, analysis_field, latitudes):
+def absolute_bias(
+        forecast_field: np.ndarray or xr.DataArray,
+        analysis_field: np.ndarray or xr.DataArray,
+        latitudes: np.ndarray or xr.DataArray
+) -> np.ndarray or xr.DataArray:
     result = np.sum(
         np.abs(forecast_field - analysis_field) * np.cos(latitudes * np.pi / 180.0)
     ) / np.sum(np.cos(latitudes * np.pi / 180.0))
     return result
 
 
-def std(forecast_field, analysis_field, latitudes):
+def std(
+        forecast_field: np.ndarray or xr.DataArray,
+        analysis_field: np.ndarray or xr.DataArray,
+        latitudes: np.ndarray or xr.DataArray
+) -> np.ndarray or xr.DataArray:
     bias_result = bias(forecast_field, analysis_field, latitudes)
     result = np.sqrt(
         np.sum(
@@ -32,15 +49,28 @@ def std(forecast_field, analysis_field, latitudes):
     return result
 
 
-def rmsem(forecast_field, analysis_field, latitudes):
+def rmsem(
+        forecast_field: np.ndarray or xr.DataArray,
+        analysis_field: np.ndarray or xr.DataArray,
+        latitudes: np.ndarray or xr.DataArray
+) -> np.ndarray or xr.DataArray:
     return np.abs(bias(forecast_field, analysis_field, latitudes))
 
 
-def rmsep(forecast_field, analysis_field, latitudes):
+def rmsep(
+        forecast_field: np.ndarray or xr.DataArray,
+        analysis_field: np.ndarray or xr.DataArray,
+        latitudes: np.ndarray or xr.DataArray
+) -> np.ndarray or xr.DataArray:
     return np.sqrt(mse(forecast_field, analysis_field, latitudes)) - rmsem(forecast_field, analysis_field, latitudes)
 
 
-def acc(forecast_field, analysis_field, climate_field, latitudes):
+def acc(
+        forecast_field: np.ndarray or xr.DataArray,
+        analysis_field: np.ndarray or xr.DataArray,
+        climate_field: np.ndarray or xr.DataArray,
+        latitudes: np.ndarray or xr.DataArray
+) -> np.ndarray or xr.DataArray:
     forecast_climate = bias(forecast_field, climate_field, latitudes)
     obs_climate = bias(analysis_field, climate_field, latitudes)
     acc1 = np.sum(
