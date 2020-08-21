@@ -7,6 +7,19 @@ def mse(
         analysis_field: np.ndarray or xr.DataArray,
         latitudes: np.ndarray or xr.DataArray
 ) -> np.ndarray or xr.DataArray:
+    """
+    Mean Square Error (MSE)
+
+    Parameters
+    ----------
+    forecast_field
+    analysis_field
+    latitudes
+
+    Returns
+    -------
+
+    """
     result = np.sum(
         np.power(forecast_field - analysis_field, 2) * np.cos(latitudes * np.pi / 180.0)
     ) / np.sum(np.cos(latitudes * np.pi / 180.0))
@@ -18,6 +31,20 @@ def bias(
         analysis_field: np.ndarray or xr.DataArray,
         latitudes: np.ndarray or xr.DataArray
 ) -> np.ndarray or xr.DataArray:
+    """
+    Mean Error (ME), also called Bias.
+
+    Parameters
+    ----------
+    forecast_field: np.ndarray or xr.DataArray
+    analysis_field: np.ndarray or xr.DataArray
+    latitudes: np.ndarray or xr.DataArray
+
+    Returns
+    -------
+    np.ndarray or xr.DataArray
+
+    """
     result = np.sum(
         (forecast_field - analysis_field) * np.cos(latitudes * np.pi / 180.0)
     ) / np.sum(np.cos(latitudes * np.pi / 180.0))
@@ -71,6 +98,20 @@ def acc(
         climate_field: np.ndarray or xr.DataArray,
         latitudes: np.ndarray or xr.DataArray
 ) -> np.ndarray or xr.DataArray:
+    """
+    Anomaly correlation coefficient (ACC)
+
+    Parameters
+    ----------
+    forecast_field
+    analysis_field
+    climate_field
+    latitudes
+
+    Returns
+    -------
+
+    """
     forecast_climate = bias(forecast_field, climate_field, latitudes)
     obs_climate = bias(analysis_field, climate_field, latitudes)
     acc1 = np.sum(
