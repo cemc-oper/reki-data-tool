@@ -1,6 +1,7 @@
 """
 使用 nwpc_data.grib.eccodes 中的 field 系列 API 加载要素场为 xarray.DataArray 对象，并进行计算。
 """
+import typing
 
 import xarray as xr
 import numpy as np
@@ -19,13 +20,14 @@ from .index import (
 
 
 def calculate_plev_stats(
-        forecast_field,
-        analysis_field,
-        climate_field,
-        domain,
-):
+        forecast_field: xr.DataArray,
+        analysis_field: xr.DataArray,
+        climate_field: xr.DataArray,
+        domain: typing.List,
+) -> pd.DataFrame:
     climate_field["longitude"] = analysis_field.longitude
 
+    # 提取子区域
     domain_forecast_field = forecast_field.sel(
         latitude=slice(*domain[1::-1]),
         longitude=slice(*domain[2:]),
