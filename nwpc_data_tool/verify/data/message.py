@@ -7,12 +7,19 @@ def get_message(
         level,
         level_type="isobaricInhPa",
 ):
-    message = load_message_from_file(
-        file_path=data_path,
-        parameter=parameter,
-        level_type=level_type,
-        level=level
-    )
+    if parameter == "wind":
+        message = get_wind_message(
+            data_path=data_path,
+            level=level,
+            level_type=level_type,
+        )
+    else:
+        message = load_message_from_file(
+            file_path=data_path,
+            parameter=parameter,
+            level_type=level_type,
+            level=level
+        )
     return message
 
 

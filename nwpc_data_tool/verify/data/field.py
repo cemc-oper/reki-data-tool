@@ -10,12 +10,19 @@ def get_field(
         level,
         level_type="isobaricInhPa",
 ) -> xr.DataArray:
-    field = load_field_from_file(
-        file_path=data_path,
-        parameter=parameter,
-        level_type=level_type,
-        level=level
-    )
+    if parameter == "wind":
+        field = get_wind_field(
+            data_path=data_path,
+            level=level,
+            level_type=level_type
+        )
+    else:
+        field = load_field_from_file(
+            file_path=data_path,
+            parameter=parameter,
+            level_type=level_type,
+            level=level
+        )
     return field
 
 
