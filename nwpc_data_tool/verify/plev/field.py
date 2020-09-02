@@ -10,9 +10,9 @@ import pandas as pd
 
 from .index import (
     mse,
-    bias,
-    absolute_bias,
-    std,
+    me,
+    mae,
+    sd,
     rmsem,
     rmsep,
     acc,
@@ -47,9 +47,9 @@ def calculate_plev_stats(
 
     df = pd.DataFrame({
         "rmse": [np.sqrt(mse(domain_forecast_field, domain_analysis_field, latitudes)).values],
-        "bias": [bias(domain_forecast_field, domain_analysis_field, latitudes).values],
-        "absolute_bias": [absolute_bias(domain_forecast_field, domain_analysis_field, latitudes).values],
-        "std": [std(domain_forecast_field, domain_analysis_field, latitudes).values],
+        "me": [me(domain_forecast_field, domain_analysis_field, latitudes).values],
+        "mae": [mae(domain_forecast_field, domain_analysis_field, latitudes).values],
+        "sd": [sd(domain_forecast_field, domain_analysis_field, latitudes).values],
         "rmsem": [rmsem(domain_forecast_field, domain_analysis_field, latitudes).values],
         "rmsep": [rmsep(domain_forecast_field, domain_analysis_field, latitudes).values],
         "acc": [acc(domain_forecast_field, domain_analysis_field, domain_climate_field, latitudes).values],

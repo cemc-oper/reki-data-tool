@@ -12,9 +12,9 @@ import pandas as pd
 
 from .index import (
     mse,
-    bias,
-    absolute_bias,
-    std,
+    me,
+    mae,
+    sd,
     rmsem,
     rmsep,
     acc,
@@ -27,6 +27,21 @@ def calculate_plev_stats(
         climate_array: np.ndarray,
         domain: typing.List,
 ) -> pd.DataFrame:
+    """
+
+    Parameters
+    ----------
+    forecast_array
+    analysis_array
+    climate_array
+    domain: typing.List
+        区域范围，[south_lat, north_lat, west_lon, east_lon]
+        例如 [20, 90, 0, 360] 表示北半球（NHEM）
+
+    Returns
+    -------
+
+    """
     # 坐标网格
     lat = np.arange(90, -90 - 1.5, -1.5)
     lon = np.arange(0, 360, 1.5)
@@ -47,9 +62,9 @@ def calculate_plev_stats(
 
     df = pd.DataFrame({
         "rmse": [np.sqrt(mse(domain_forecast_array, domain_analysis_array, latitudes))],
-        "bias": [bias(domain_forecast_array, domain_analysis_array, latitudes)],
-        "absolute_bias": [absolute_bias(domain_forecast_array, domain_analysis_array, latitudes)],
-        "std": [std(domain_forecast_array, domain_analysis_array, latitudes)],
+        "me": [me(domain_forecast_array, domain_analysis_array, latitudes)],
+        "mae": [mae(domain_forecast_array, domain_analysis_array, latitudes)],
+        "sd": [sd(domain_forecast_array, domain_analysis_array, latitudes)],
         "rmsem": [rmsem(domain_forecast_array, domain_analysis_array, latitudes)],
         "rmsep": [rmsep(domain_forecast_array, domain_analysis_array, latitudes)],
         "acc": [acc(domain_forecast_array, domain_analysis_array, domain_climate_array, latitudes)],
