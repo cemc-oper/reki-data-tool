@@ -27,31 +27,12 @@ def calculate_point_surface(
     else:
         masked_forecast_field = forecast_field
 
-    geo_obs_table = gpd.GeoDataFrame(
-        obs_table,
-        geometry=gpd.points_from_xy(
-            obs_table.longitude,
-            obs_table.latitude
-        )
-    )
+    domain_geo_obs_table = get_obs_in_domain(obs_table, domain)
 
-    if domain is not None:
-        # domain = [20, 55, 70, 145]
-        polygen = Polygon([
-            (domain[2], domain[0]),
-            (domain[2], domain[1]),
-            (domain[3], domain[1]),
-            (domain[3], domain[0]),
-        ])
-
-        domain_geo_obs_table = geo_obs_table[geo_obs_table.intersects(polygen)].copy()
-    else:
-        domain_geo_obs_table = geo_obs_table
-
-    def get_nearest_value(line):
+    def get_nearest_value(row):
         value = masked_forecast_field.sel(
-            longitude=line["longitude"],
-            latitude=line["latitude"],
+            longitude=row["longitude"],
+            latitude=row["latitude"],
             method="nearest"
         ).item()
         return value
@@ -85,3 +66,65 @@ def calculate_point_surface(
     df = pd.DataFrame(index_dict)
 
     return df
+
+
+def get_obs_in_domain(
+        obs_table: pd.DataFrame or gpd.GeoDataFrame,
+        domain: typing.List or None = None,
+) -> pd.DataFrame:
+    if isinstance(obs_table, gpd.GeoDataFrame):
+        geo_obs_table = obs_table
+    else:
+        geo_obs_table = gpd.GeoDataFrame(
+            obs_table,
+            geometry=gpd.points_from_xy(
+                obs_table.longitude,
+                obs_table.latitude
+            )
+        )
+
+    if domain is not None:
+        # domain = [20, 55, 70, 145]
+        polygen = Polygon([
+            (domain[2], domain[0]),
+            (domain[2], domain[1]),
+            (domain[3], domain[1]),
+            (domain[3], domain[0]),
+        ])
+        domain_geo_obs_table = geo_obs_table[geo_obs_table.intersects(polygen)].copy()
+    else:
+        domain_geo_obs_table = geo_obs_table
+
+    return domain_geo_obs_table
+
+
+def get_obs_in_domain_v2(
+        obs_table: pd.DataFrame or gpd.GeoDataFrame,
+        domain: typing.List,
+) -> pd.DataFrame:
+    if isinstance(obs_table, gpd.GeoDataFrame):
+        geo_obs_table = obs_table
+    else:
+        geo_obs_table = gpd.GeoDataFrame(
+            obs_table,
+            geometry=gpd.points_from_xy(
+                obs_table.longitude,
+                obs_table.latitude
+            )
+        )
+
+    def in_domain(row):
+        lat = row["latitude"]
+        lon = row["longitude"]
+        return (
+            lat >= domain[0]
+            and lat <= domain[1]
+            and lon >= domain[2]
+            and lon <= domain[3]
+        )
+
+    domain_geo_obs_table = geo_obs_table[geo_obs_table.apply(
+        in_domain, axis="columns"
+    )].copy()
+
+    return domain_geo_obs_table
