@@ -117,10 +117,8 @@ def get_obs_in_domain_v2(
         lat = row["latitude"]
         lon = row["longitude"]
         return (
-            lat >= domain[0]
-            and lat <= domain[1]
-            and lon >= domain[2]
-            and lon <= domain[3]
+                domain[0] <= lat <= domain[1]
+                and domain[2] <= lon <= domain[3]
         )
 
     domain_geo_obs_table = geo_obs_table[geo_obs_table.apply(
