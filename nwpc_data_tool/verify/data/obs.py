@@ -24,6 +24,10 @@ def load_obs_gts_file(
       511     32.85     35.11   1011.10     24.75     23.05    229.00      0.10      0.00      0.00 999999.00   1009.90
     ```
 
+    GTS 观测文件路径
+    data_class: vfy
+    data_type: muvos/obs/gts
+
     Parameters
     ----------
     file_path: pathlib.Path or str
