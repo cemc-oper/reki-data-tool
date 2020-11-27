@@ -3,6 +3,33 @@ import typing
 import xarray as xr
 
 
+def standard_station(
+        field: xr.DataArray,
+        record: typing.Dict,
+) -> xr.DataArray:
+    current = set_attrs_for_station(field, record)
+    current = change_coords_for_station(current)
+    return current
+
+
+def standard_lat_section(
+        field: xr.DataArray,
+        record: typing.Dict,
+) -> xr.DataArray:
+    current = set_attrs_for_lat_section(field, record)
+    current = change_coords_for_lat_section(current)
+    return current
+
+
+def standard_lon_section(
+        field: xr.DataArray,
+        record: typing.Dict
+) -> xr.DataArray:
+    current = set_attrs_for_lon_section(field, record)
+    current = change_coords_for_lon_section(current)
+    return current
+
+
 def set_attrs_for_station(
         field: xr.DataArray,
         field_record: typing.Dict
@@ -19,7 +46,6 @@ def set_attrs_for_station(
     -------
 
     """
-
     if "lon_0" in field.attrs:
         lon_0 = field.attrs["lon_0"]
     else:
