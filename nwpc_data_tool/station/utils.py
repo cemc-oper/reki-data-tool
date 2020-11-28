@@ -47,7 +47,7 @@ def extract_domain(
     return domain_field
 
 def combine_fields(
-        fields: xr.DataArray,
+        fields: typing.List[xr.DataArray],
         field_record: typing.Dict,
         dim: str="valid_time",
 ) -> xr.DataArray:
