@@ -14,6 +14,7 @@ def extract_level(
         pl=levels
     )
 
+
 def extract_domain(
         field: xr.DataArray,
         lat_index: typing.Union[int, typing.Tuple[int, int]],
@@ -46,6 +47,7 @@ def extract_domain(
 
     return domain_field
 
+
 def combine_fields(
         fields: typing.List[xr.DataArray],
         field_record: typing.Dict,
@@ -56,6 +58,7 @@ def combine_fields(
     """
     field = xr.concat(fields, dim=dim)
     return field
+
 
 def compute_field(
         op: typing.Callable,
