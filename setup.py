@@ -59,8 +59,11 @@ setup(
         "cfgrib": [
             "cfgrib",
         ],
+        "ml": [
+            "scikit-learn"
+        ],
         "test": ['pytest'],
-        "cov": ['pytest-cov', 'codecov']
+        "cov": ['pytest-cov', 'codecov'],
     },
 
     entry_points={

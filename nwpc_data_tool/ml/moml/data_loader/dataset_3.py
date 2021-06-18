@@ -24,7 +24,7 @@ def extract_test_dataset(
     return test_input_ds, test_output_ds
 
 
-def extract_train_output(ds, train_periods, forecast_time):
+def _extract_train_output(ds, train_periods, forecast_time):
     def get_period_output(period):
         p = period + forecast_time
         return ds.sel(
@@ -47,7 +47,7 @@ def extract_train_dataset(
         train_periods,
         forecast_time: pd.Timedelta,
 ) -> Tuple[xr.Dataset, xr.Dataset]:
-    train_output_ds = extract_train_output(output_ds, train_periods, forecast_time)
+    train_output_ds = _extract_train_output(output_ds, train_periods, forecast_time)
     output_time = train_output_ds.time.values
 
     forecast_time_range = get_forecast_time_list(forecast_time)
