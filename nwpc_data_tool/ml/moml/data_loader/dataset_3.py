@@ -1,7 +1,7 @@
 import pandas as pd
 import xarray as xr
 import numpy as np
-from typing import List, Union
+from typing import List, Union, Tuple
 
 
 def get_train_periods(start_time):
@@ -24,18 +24,23 @@ def get_train_periods(start_time):
     ]
 
 
-def extract_test_output(ds, start_time, forecast_time):
-    return ds.sel(
+def extract_test_dataset(
+        input_ds: xr.Dataset,
+        output_ds: xr.Dataset,
+        start_time,
+        forecast_time
+):
+    total_hours = forecast_time / pd.Timedelta(hours=1)
+    forecast_time_range = pd.to_timedelta([total_hours - t for t in range(66, -6, -6)], unit="h")
+    test_input_ds = input_ds.sel(
+        time=start_time,
+        step=forecast_time_range
+    )
+    test_output_ds = output_ds.sel(
         time=start_time + forecast_time,
         step=pd.to_timedelta("0s")
     )
-
-
-def extract_test_input(ds, start_time, forecast_time):
-    return ds.sel(
-        time=start_time,
-        step=forecast_time
-    )
+    return test_input_ds, test_output_ds
 
 
 def extract_train_output(ds, train_periods, forecast_time):
@@ -55,17 +60,20 @@ def extract_train_output(ds, train_periods, forecast_time):
     return train_output_ds
 
 
-def extract_train_input_output(
+def extract_train_dataset(
         input_ds: Union[xr.DataArray, xr.Dataset],
         output_ds: Union[xr.DataArray, xr.Dataset],
         train_periods,
-        forecast_time: pd.Timedelta
-):
+        forecast_time: pd.Timedelta,
+) -> Tuple[xr.Dataset, xr.Dataset]:
     train_output_ds = extract_train_output(output_ds, train_periods, forecast_time)
     output_time = train_output_ds.time.values
 
+    total_hours = forecast_time / pd.Timedelta(hours=1)
+    forecast_time_range = pd.to_timedelta([total_hours - t for t in range(66, -6, -6)], unit="h")
+
     input_dss = [
-        input_ds.sel(time=t-forecast_time, step=forecast_time)
+        input_ds.sel(time=t-forecast_time, step=forecast_time_range)
         for t in output_time
         if pd.to_datetime(t-forecast_time) in input_ds.time
     ]
