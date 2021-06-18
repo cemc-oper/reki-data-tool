@@ -22,7 +22,10 @@ from nwpc_data_tool.ml.moml.validate.index import rmse
 
 
 class MosModel(object):
-    def __init__(self, train_period_type: str="running"):
+    def __init__(
+            self,
+            train_period_type: str = "running"
+    ):
         self.train_period_type = train_period_type
 
     def set_dataset(self, input_ds: xr.Dataset, output_ds: xr.Dataset):

@@ -4,24 +4,25 @@ import numpy as np
 from typing import List, Union
 
 
-def get_train_periods(start_time: pd.Timestamp, forecast_time: pd.Timedelta):
+def get_train_periods(start_time: pd.Timestamp, forecast_time: pd.Timedelta, years=3) -> List:
     train_range_current_year = pd.Interval(
         start_time - pd.to_timedelta("35d"),
         start_time - forecast_time,
         closed="left"
     )
 
-    last_year_start_time = start_time - pd.DateOffset(years=1)
-    train_range_last_year = pd.Interval(
-        last_year_start_time - pd.to_timedelta("35d"),
-        last_year_start_time + pd.to_timedelta("35d"),
-        closed="both"
-    )
+    periods = [train_range_current_year]
 
-    return [
-        train_range_last_year,
-        train_range_current_year
-    ]
+    for year in range(1, years+1):
+        current_start_time = start_time - pd.DateOffset(years=year)
+        train_range_last_year = pd.Interval(
+            current_start_time - pd.to_timedelta("35d"),
+            current_start_time + pd.to_timedelta("35d"),
+            closed="both"
+        )
+        periods.append(train_range_last_year)
+
+    return periods
 
 
 # def extract_test_output(ds, start_time, forecast_time):
