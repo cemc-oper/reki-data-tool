@@ -5,15 +5,17 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn import preprocessing
 
-from moml.data_loader.running_period import (
+from nwpc_data_tool.ml.moml.data_loader.running_period import (
     get_train_periods,
     extract_test_output,
     extract_test_input,
     extract_train_input_output,
+)
+from nwpc_data_tool.ml.moml.data_loader.dataset import (
     reshape_array_to_sample,
     reshape_array_to_samples
 )
-from moml.index import rmse
+from nwpc_data_tool.ml.moml.validate.index import rmse
 
 
 class MosModel(object):

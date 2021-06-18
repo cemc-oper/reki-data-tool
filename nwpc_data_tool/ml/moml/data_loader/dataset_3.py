@@ -3,25 +3,7 @@ import xarray as xr
 import numpy as np
 from typing import List, Union, Tuple
 
-
-def get_train_periods(start_time):
-    train_range_current_year = pd.Interval(
-        start_time - pd.to_timedelta("35d"),
-        start_time,
-        closed="both"
-    )
-
-    last_year_start_time = start_time - pd.DateOffset(years=1)
-    train_range_last_year = pd.Interval(
-        last_year_start_time - pd.to_timedelta("35d"),
-        last_year_start_time + pd.to_timedelta("35d"),
-        closed="both"
-    )
-
-    return [
-        train_range_last_year,
-        train_range_current_year
-    ]
+from .dataset import get_forecast_time_list
 
 
 def extract_test_dataset(
@@ -30,8 +12,7 @@ def extract_test_dataset(
         start_time,
         forecast_time
 ):
-    total_hours = forecast_time / pd.Timedelta(hours=1)
-    forecast_time_range = pd.to_timedelta([total_hours - t for t in range(66, -6, -6)], unit="h")
+    forecast_time_range = get_forecast_time_list(forecast_time)
     test_input_ds = input_ds.sel(
         time=start_time,
         step=forecast_time_range
@@ -69,8 +50,7 @@ def extract_train_dataset(
     train_output_ds = extract_train_output(output_ds, train_periods, forecast_time)
     output_time = train_output_ds.time.values
 
-    total_hours = forecast_time / pd.Timedelta(hours=1)
-    forecast_time_range = pd.to_timedelta([total_hours - t for t in range(66, -6, -6)], unit="h")
+    forecast_time_range = get_forecast_time_list(forecast_time)
 
     input_dss = [
         input_ds.sel(time=t-forecast_time, step=forecast_time_range)
@@ -82,13 +62,3 @@ def extract_train_dataset(
     # 按输入集筛选目标数据
     train_output_ds = train_output_ds.sel(time=train_input_ds.time + forecast_time)
     return train_input_ds, train_output_ds
-
-
-def reshape_array_to_samples(array: np.ndarray):
-    s = array.shape
-    return array.reshape(s[0], np.prod(s[1:]))
-
-
-def reshape_array_to_sample(array: np.ndarray):
-    s = array.shape
-    return array.reshape(1, np.prod(s))

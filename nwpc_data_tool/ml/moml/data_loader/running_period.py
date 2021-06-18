@@ -4,11 +4,11 @@ import numpy as np
 from typing import List, Union
 
 
-def get_train_periods(start_time):
+def get_train_periods(start_time: pd.Timestamp, forecast_time: pd.Timedelta):
     train_range_current_year = pd.Interval(
         start_time - pd.to_timedelta("35d"),
-        start_time,
-        closed="both"
+        start_time - forecast_time,
+        closed="left"
     )
 
     last_year_start_time = start_time - pd.DateOffset(years=1)
@@ -74,13 +74,3 @@ def extract_train_input_output(
     # 按输入集筛选目标数据
     train_output_ds = train_output_ds.sel(time=train_input_ds.time + forecast_time)
     return train_input_ds, train_output_ds
-
-
-def reshape_array_to_samples(array: np.ndarray):
-    s = array.shape
-    return array.reshape(s[0], np.prod(s[1:]))
-
-
-def reshape_array_to_sample(array: np.ndarray):
-    s = array.shape
-    return array.reshape(1, np.prod(s))
