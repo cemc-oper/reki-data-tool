@@ -42,7 +42,8 @@ names = [
         "field_name": "v",
     },
     {
-        "field_name": "wz",
+        "field_name": "w",
+        "data_source": "postvar",
     },
     {
         "field_name": "snmr",
@@ -95,7 +96,7 @@ dataset_names = [
         "units": "m/s",
     },
     {
-        "field_name": "wz",
+        "field_name": "w",
         "name": "W",
         "long_name": "Vertical velocity (geometric)",
         "units": "m/s",
