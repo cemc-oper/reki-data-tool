@@ -1,5 +1,5 @@
 """
-使用 nwpc_data.grib.eccodes 中的 message 系列 API 加载要素场为 eccodes GRIB message，并进行计算。
+使用 reki.grib.eccodes 中的 message 系列 API 加载要素场为 eccodes GRIB message，并进行计算。
 
 Notes
 -----

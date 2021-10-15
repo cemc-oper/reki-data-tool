@@ -1,4 +1,4 @@
-from nwpc_data.grib.eccodes import load_message_from_file
+from reki.grib.eccodes import load_message_from_file
 
 import numpy as np
 import eccodes

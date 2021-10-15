@@ -1,7 +1,7 @@
 import numpy as np
 import xarray as xr
 
-from nwpc_data.grib.eccodes import load_field_from_file
+from reki.grib.eccodes import load_field_from_file
 
 
 def get_field(
