@@ -7,18 +7,18 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn import preprocessing
 
-from cemc_data_tool.ml.moml.data_loader.running_period import (
+from reki_data_tool.ml.moml.data_loader.running_period import (
     get_train_periods,
 )
-from cemc_data_tool.ml.moml.data_loader.dataset_3 import (
+from reki_data_tool.ml.moml.data_loader.dataset_3 import (
     extract_test_dataset,
     extract_train_dataset
 )
-from cemc_data_tool.ml.moml.data_loader.dataset import (
+from reki_data_tool.ml.moml.data_loader.dataset import (
     reshape_array_to_sample,
     reshape_array_to_samples
 )
-from cemc_data_tool.ml.moml.validate.index import rmse
+from reki_data_tool.ml.moml.validate.index import rmse
 
 
 class MosModel(object):

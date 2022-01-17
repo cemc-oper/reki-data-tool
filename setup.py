@@ -5,7 +5,7 @@ from os import path
 import io
 import re
 
-with io.open("cemc_data_tool/__init__.py", "rt", encoding="utf8") as f:
+with io.open("reki_data_tool/__init__.py", "rt", encoding="utf8") as f:
     version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
 
 here = path.abspath(path.dirname(__file__))

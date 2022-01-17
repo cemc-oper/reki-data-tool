@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 import eccodes
 
-from cemc_data_tool.verify.data import get_message
-from cemc_data_tool.verify.plev.eccodes import calculate_plev_stats
+from reki_data_tool.verify.data import get_message
+from reki_data_tool.verify.plev.eccodes import calculate_plev_stats
 
 
 def get_values(
