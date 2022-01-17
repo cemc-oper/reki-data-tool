@@ -1,9 +1,13 @@
 """
 冬奥系统 1KM BTH GRIB2 网格产品
 
-简单并行
+多个树形结构
 
-每个目标文件一个 Dask 任务，任务内部串行从多个文件中顺序抽取要素场
+Dask 任务：
+- 单个要素抽取
+- 单个文件合并输出
+
+并发抽取所有要素场，每个文件一个任务收集需要的要素场并输出到文件中
 """
 from pathlib import Path
 
@@ -142,24 +146,28 @@ def get_grib2_file_name(start_time: pd.Timestamp, forecast_time: pd.Timedelta):
     return f"rmf.hgra.{start_time_str}{forecast_time_str}.grb2"
 
 
-def get_fields(product, start_time, grib_orig_path, output_path):
+def get_fields(product, start_time, grib_orig_path):
     field = product["field"]
+    forecast_time_list = pd.to_timedelta(np.arange(0, 25, 1), unit="h")
+    field_bytes_list = []
+    for forecast_time in forecast_time_list:
+        file_name = get_grib2_file_name(start_time, forecast_time)
+        # print(file_name)
+        field_bytes = dask.delayed(load_bytes_from_file)(
+            Path(grib_orig_path, file_name),
+            **field
+        )
+        field_bytes_list.append(field_bytes)
+    return field_bytes_list
 
+
+def write_to_file(product, field_bytes_list, output_path):
     output_name = product["output"]["name"]
     output_file = Path(output_path, f"{output_name}.grb2")
-
-    forecast_time_list = pd.to_timedelta(np.arange(0, 25, 1), unit="h")
-
+    # print(output_file.absolute())
     with open(output_file, "wb") as f:
-        for forecast_time in forecast_time_list:
-            file_name = get_grib2_file_name(start_time, forecast_time)
-            # print(file_name)
-            field_bytes = load_bytes_from_file(
-                Path(grib_orig_path, file_name),
-                **field
-            )
+        for field_bytes in field_bytes_list:
             f.write(field_bytes)
-            del field_bytes
     return output_file
 
 
@@ -176,7 +184,11 @@ def main():
     output_files = []
     for product in PRODUCTION_LIST:
         # print(product)
-        output_file_path = dask.delayed(get_fields)(product, start_time, grib_orig_path, output_path)
+        field_bytes_list = get_fields(product, start_time, grib_orig_path)
+
+        output_file_path = dask.delayed(write_to_file)(
+            product, field_bytes_list, output_path
+        )
         output_files.append(output_file_path)
 
     p = client.compute(output_files)

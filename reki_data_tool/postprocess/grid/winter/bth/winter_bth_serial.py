@@ -1,5 +1,7 @@
 """
 冬奥系统 1KM BTH GRIB2 网格产品
+
+串行运行
 """
 from pathlib import Path
 
@@ -7,9 +9,7 @@ import pandas as pd
 import numpy as np
 import xarray as xr
 
-import dask
-from dask.distributed import Client, progress
-from dask_mpi import initialize
+from tqdm.auto import tqdm
 
 from reki.format.grib.eccodes import load_bytes_from_file
 
@@ -145,22 +145,12 @@ def get_fields(product, start_time, grib_orig_path):
     for forecast_time in forecast_time_list:
         file_name = get_grib2_file_name(start_time, forecast_time)
         # print(file_name)
-        field_bytes = dask.delayed(load_bytes_from_file)(
+        field_bytes = load_bytes_from_file(
             Path(grib_orig_path, file_name),
             **field
         )
         field_bytes_list.append(field_bytes)
     return field_bytes_list
-
-
-def write_to_file(product, field_bytes_list, output_path):
-    output_name = product["output"]["name"]
-    output_file = Path(output_path, f"{output_name}.grb2")
-    # print(output_file.absolute())
-    with open(output_file, "wb") as f:
-        for field_bytes in field_bytes_list:
-            f.write(field_bytes)
-    return output_file
 
 
 def main():
@@ -169,31 +159,19 @@ def main():
     grib_orig_path = "/g11/wangdp/project/work/data/playground/winter/grid/data/grib2-orig"
     output_path = "/g11/wangdp/project/work/data/playground/winter/grid/output/serial"
 
-    client = Client()
-
     start_time = pd.to_datetime(start_time, format="%Y%m%d%H")
 
-    output_files = []
-    for product in PRODUCTION_LIST:
+    for product in tqdm(PRODUCTION_LIST):
         # print(product)
         field_bytes_list = get_fields(product, start_time, grib_orig_path)
 
-        output_file_path = dask.delayed(write_to_file)(
-            product, field_bytes_list, output_path
-        )
-        output_files.append(output_file_path)
-
-    p = client.compute(output_files)
-    progress(p)
-
-    output_f = client.gather(p)
-    print(output_f)
-    del p
-
-    client.close()
+        output_name = product["output"]["name"]
+        output_file = Path(output_path, f"{output_name}.grb2")
+        print(output_file.absolute())
+        with open(output_file, "wb") as f:
+            for field_bytes in field_bytes_list:
+                f.write(field_bytes)
 
 
 if __name__ == "__main__":
-    print(pd.Timestamp.now())
     main()
-    print(pd.Timestamp.now())
