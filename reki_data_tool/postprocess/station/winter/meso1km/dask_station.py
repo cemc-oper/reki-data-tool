@@ -12,19 +12,19 @@ from dask_mpi import initialize
 from reki.format.grib.eccodes import load_field_from_file as load_grib2_field_from_file
 from reki.format.grads import load_field_from_file as load_grads_field_from_file
 
-from reki_data_tool.station.utils import (
+from reki_data_tool.utils import (
     extract_domain,
     combine_fields,
     compute_field,
 )
 
-from reki_data_tool.station.winter.utils import (
+from reki_data_tool.postprocess.station.winter.meso1km.utils import (
     standard_station,
     standard_lat_section,
     standard_lon_section,
 )
 
-from reki_data_tool.station.winter.condition import (
+from reki_data_tool.postprocess.station.winter.meso1km.condition import (
     levels,
     names,
     dataset_names,
