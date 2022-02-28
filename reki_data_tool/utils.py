@@ -1,6 +1,7 @@
 import typing
 
 import xarray as xr
+import pandas as pd
 
 
 def extract_level(
@@ -68,3 +69,12 @@ def compute_field(
     计算要素场
     """
     return op(*args)
+
+
+def cal_run_time(func):
+    def wrapper(*args, **kwargs):
+        start_time = pd.Timestamp.now()
+        func(*args, **kwargs)
+        end_time = pd.Timestamp.now()
+        print(end_time - start_time)
+    return wrapper
