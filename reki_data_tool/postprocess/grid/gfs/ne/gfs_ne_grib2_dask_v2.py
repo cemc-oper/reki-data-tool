@@ -1,3 +1,11 @@
+"""
+并行方式生成 grib2-ne 数据
+
+分批解码、编码、写文件，每次分发 32 个任务
+
+是否对多计算节点有帮助？
+"""
+
 from pathlib import Path
 
 import numpy as np
@@ -6,7 +14,6 @@ import xarray as xr
 
 from loguru import logger
 import eccodes
-from tqdm.auto import tqdm
 
 import dask
 from dask.distributed import Client, progress
@@ -15,29 +22,34 @@ from reki.data_finder import find_local_file
 from reki.format.grib.eccodes import load_message_from_file
 from reki.format.grib.eccodes.operator import extract_region
 
+from reki_data_tool.postprocess.grid.gfs.ne.config import START_TIME, FORECAST_TIME, OUTPUT_DIRECTORY
+from reki_data_tool.utils import cal_run_time
+
 
 def get_message_bytes(
         file_path,
         count,
 ) -> bytes:
     message = load_message_from_file(file_path, count=count)
-    # extract_region(
-    #     message,
-    #     0, 180, 89.875, 0.125
-    # )
+    extract_region(
+        message,
+        0, 180, 89.875, 0.125
+    )
     message_bytes = eccodes.codes_get_message(message)
     eccodes.codes_release(message)
-    return b'1'
+    return message_bytes
+    # return b'1'
 
 
+@cal_run_time
 def main():
     file_path = find_local_file(
         "grapes_gfs_gmf/grib2/orig",
-        start_time=pd.to_datetime("2021-09-01 00:00:00"),
-        forecast_time=pd.Timedelta(hours=24)
+        start_time=START_TIME,
+        forecast_time=FORECAST_TIME
     )
 
-    output_directory = "/g11/wangdp/project/work/data/playground/operation/gfs/ne/output"
+    output_directory = OUTPUT_DIRECTORY
     output_file_path = Path(output_directory, "ne_dask.grb2")
 
     logger.info("count...")

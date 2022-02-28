@@ -1,8 +1,9 @@
-from pathlib import Path
+"""
+串行方式生成 grib2-ne 数据
 
-import numpy as np
-import pandas as pd
-import xarray as xr
+5 - 6 分钟
+"""
+from pathlib import Path
 
 from loguru import logger
 import eccodes
@@ -12,15 +13,19 @@ from reki.data_finder import find_local_file
 from reki.format.grib.eccodes import load_message_from_file
 from reki.format.grib.eccodes.operator import extract_region
 
+from reki_data_tool.postprocess.grid.gfs.ne.config import START_TIME, FORECAST_TIME, OUTPUT_DIRECTORY
+from reki_data_tool.utils import cal_run_time
 
+
+@cal_run_time
 def main():
     file_path = find_local_file(
         "grapes_gfs_gmf/grib2/orig",
-        start_time=pd.to_datetime("2021-09-01 00:00:00"),
-        forecast_time=pd.Timedelta(hours=24)
+        start_time=START_TIME,
+        forecast_time=FORECAST_TIME
     )
 
-    output_directory = "/g11/wangdp/project/work/data/playground/operation/gfs/ne/output"
+    output_directory = OUTPUT_DIRECTORY
     output_file_path = Path(output_directory, "ne.grb2")
 
     logger.info("count...")
