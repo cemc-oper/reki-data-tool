@@ -54,6 +54,7 @@ setup(
         "dask",
         "click",
         "tqdm",
+        "loguru",
     ],
 
     extras_require={
