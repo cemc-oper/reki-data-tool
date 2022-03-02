@@ -27,18 +27,18 @@ setup(
     author='perillaroc',
     author_email='perillaroc@gmail.com',
 
-    license='GPLv3',
+    license='MIT',
 
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
 
-    keywords='nwpc data grib2',
+    keywords='cemc data grib2',
 
     packages=find_packages(exclude=['docs', 'tests', 'example']),
 

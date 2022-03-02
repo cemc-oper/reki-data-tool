@@ -12,4 +12,4 @@
 
 Copyright &copy; 2020-2022, perillaroc at cemc-oper.
 
-`reki-data-tool` is licensed under [GPL v3.0](LICENSE.md)
+`reki-data-tool` is licensed under [MIT](./LICENSE) license.
