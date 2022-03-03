@@ -19,7 +19,7 @@ def serial(
         forecast_time: Optional[str] = None,
         output_file_path: Optional[Path] = typer.Option(None)
 ):
-    from reki_data_tool.postprocess.grid.gfs.ne.gfs_ne_grib2 import create_grib2_ne
+    from reki_data_tool.postprocess.grid.gfs.ne.gfs_ne_grib2_serial import create_grib2_ne
 
     start_time, forecast_time = parse_time_options(start_time, forecast_time)
 

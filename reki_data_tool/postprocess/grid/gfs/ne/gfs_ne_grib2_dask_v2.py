@@ -42,7 +42,7 @@ def get_message_bytes(
 
 
 @cal_run_time
-def main():
+def create_grib2_ne_dask_v2():
     file_path = find_local_file(
         "grapes_gfs_gmf/grib2/orig",
         start_time=START_TIME,
@@ -86,4 +86,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    create_grib2_ne_dask_v2()

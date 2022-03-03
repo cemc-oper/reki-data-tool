@@ -68,7 +68,7 @@ def create_dask_v1_task(output_script_path: Path):
         job_name=output_script_path.stem,
         is_parallel=True,
         partition="normal",
-        nodes=1,
+        nodes=4,
         ntasks_per_node=32,
         model_path="reki_data_tool.postprocess.grid.gfs.ne",
         options=f"""dask-v1 \\
