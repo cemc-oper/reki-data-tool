@@ -9,6 +9,7 @@
 耗时：1 分钟 (登录节点测试)
 """
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -44,28 +45,46 @@ def get_message_bytes(
 
 
 @cal_run_time
-def main():
+def create_grib2_ne_dask_v1(
+        start_time: pd.Timestamp,
+        forecast_time: pd.Timedelta,
+        output_file_path: Union[Path, str],
+        engine: str = "local",
+):
+    logger.info(f"create dask client with engine {engine}...")
+    if engine == "local":
+        client = Client(
+            threads_per_worker=1,
+        )
+        logger.info("use local engine")
+    elif engine == "mpi":
+        from dask_mpi import initialize
+
+        initialize(
+            interface="ib0",
+            dashboard=False,
+            nthreads=1
+        )
+        client = Client()
+        logger.info("use mpi engine")
+    else:
+        raise ValueError(f"engine is not support: {engine}")
+
+    print(client)
+    logger.info("create dask client...done")
+
     file_path = find_local_file(
         "grapes_gfs_gmf/grib2/orig",
-        start_time=START_TIME,
-        forecast_time=FORECAST_TIME
+        start_time=start_time,
+        forecast_time=forecast_time
     )
-
-    output_directory = OUTPUT_DIRECTORY
-    output_file_path = Path(output_directory, "ne_dask.grb2")
+    logger.info(file_path)
 
     logger.info("count...")
     with open(file_path, "rb") as f:
         total_count = eccodes.codes_count_in_file(f)
         logger.info(f"total count: {total_count}")
     logger.info("count..done")
-
-    logger.info("create dask client...")
-    client = Client(
-        threads_per_worker=1,
-    )
-    print(client)
-    logger.info("create dask client...done")
 
     # 一次性分发任务，Future 按顺序保存到列表中
     logger.info("submit jobs...")
@@ -92,4 +111,23 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    from reki_data_tool.postprocess.grid.gfs.ne.config import (
+        get_random_start_time,
+        get_random_forecast_time,
+        OUTPUT_DIRECTORY
+    )
+
+    start_time = get_random_start_time()
+    start_time_label = start_time.strftime("%Y%m%d%H")
+    forecast_time = get_random_forecast_time()
+    forecast_time_label = f"{int(forecast_time / pd.Timedelta(hours=1)):03}"
+    print(start_time_label, forecast_time_label)
+
+    output_directory = OUTPUT_DIRECTORY
+    output_file_path = Path(
+        output_directory,
+        f'ne_{start_time_label}_{forecast_time_label}.grb2'
+    )
+    print(output_file_path)
+
+    create_grib2_ne_dask_v1(start_time, forecast_time, output_file_path)

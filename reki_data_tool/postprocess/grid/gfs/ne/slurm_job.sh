@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -J reki
-#SBATCH --partition={{ partition }}
+#SBATCH -p {{ partition }}
 {%- if is_parallel %}
-#SBATCH --nodes={{ nodes }}
+#SBATCH -N {{ nodes }}
 #SBATCH --ntasks-per-node={{ ntasks_per_node }}
 {%- endif %}
 #SBATCH -o {{ job_name }}.%j.out
@@ -38,10 +38,13 @@ echo "run script..."
 date
 
 {%- if is_parallel %}
-module load compiler/intel/composer_xe_2017.2.174
-module load mpi/intelmpi/2017.2.174
-export I_MPI_PMI_LIBRARY=/opt/gridview/slurm17/lib/libpmi.so
-srun --mpi=pmi2 python -m {{ model_path }} {{ options }}
+# module load compiler/intel/composer_xe_2017.2.174
+# module load mpi/intelmpi/2017.2.174
+# module load apps/eccodes/2.17.0/intel
+
+# export I_MPI_PMI_LIBRARY=/opt/gridview/slurm17/lib/libpmi.so
+
+mpirun python -m {{ model_path }} {{ options }}
 {%- else  %}
 python -m {{ model_path }} {{ options }}
 {%- endif %}
