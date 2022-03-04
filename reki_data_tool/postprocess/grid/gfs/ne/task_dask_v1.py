@@ -29,7 +29,11 @@ def create_grib2_ne_dask_v1(
         engine: str = "local",
 ):
     logger.info(f"create dask client with engine {engine}...")
-    client = create_dask_client(engine, client_kwargs=dict(threads_per_worker=1))
+    if engine == "local":
+        client_kwargs = dict(nthreads_per_worker=1)
+    else:
+        client_kwargs = dict()
+    client = create_dask_client(engine, client_kwargs=client_kwargs)
     logger.info("create dask client with engine {engine}...done")
     logger.info(f"client: {client}")
 
