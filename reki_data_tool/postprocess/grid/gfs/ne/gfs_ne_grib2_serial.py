@@ -8,14 +8,12 @@ from typing import Union
 
 import pandas as pd
 from loguru import logger
-import eccodes
 from tqdm.auto import tqdm
 
 from reki.data_finder import find_local_file
-from reki.format.grib.eccodes import load_message_from_file
-from reki.format.grib.eccodes.operator import extract_region
 
-from reki_data_tool.utils import cal_run_time
+from reki_data_tool.postprocess.grid.gfs.ne.common import get_message_bytes
+from reki_data_tool.utils import cal_run_time, get_message_count
 
 
 @cal_run_time
@@ -31,22 +29,15 @@ def create_grib2_ne(
     )
 
     logger.info("count...")
-    with open(file_path, "rb") as f:
-        total_count = eccodes.codes_count_in_file(f)
-        logger.info(f"total count: {total_count}")
+    total_count = get_message_count(file_path)
     logger.info("count..done")
 
     logger.info("process...")
     with open(output_file_path, "wb") as f:
         for i in tqdm(range(1, total_count+1)):
-            message = load_message_from_file(file_path, count=i)
-            message = extract_region(
-                message,
-                0, 180, 89.875, 0.125
-            )
-            message_bytes = eccodes.codes_get_message(message)
+            message_bytes = get_message_bytes(file_path, count=i)
             f.write(message_bytes)
-            eccodes.codes_release(message)
+            del message_bytes
     logger.info("process...done")
 
 
