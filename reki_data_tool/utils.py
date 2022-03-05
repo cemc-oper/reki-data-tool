@@ -75,7 +75,18 @@ def compute_field(
     return op(*args)
 
 
-def cal_run_time(func):
+def cal_run_time(func) -> Callable:
+    """
+    A function wrapper to print function's run time.
+
+    Parameters
+    ----------
+    func
+
+    Returns
+    -------
+    Callable
+    """
     def wrapper(*args, **kwargs):
         start_time = pd.Timestamp.now()
         func(*args, **kwargs)
@@ -117,7 +128,18 @@ def create_dask_client(engine: str = "local", client_kwargs: Dict = None) -> Cli
     return client
 
 
-def get_message_count(file_path):
+def get_message_count(file_path) -> int:
+    """
+    Get total number of GRIB messages in one GRIB file.
+
+    Parameters
+    ----------
+    file_path
+
+    Returns
+    -------
+    int
+    """
     with open(file_path, "rb") as f:
         total_count = eccodes.codes_count_in_file(f)
         logger.info(f"total count: {total_count}")

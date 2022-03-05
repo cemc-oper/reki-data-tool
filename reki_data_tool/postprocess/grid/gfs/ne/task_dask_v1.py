@@ -73,11 +73,8 @@ def create_grib2_ne_dask_v1(
 
 
 if __name__ == "__main__":
-    from reki_data_tool.postprocess.grid.gfs.ne.config import (
-        get_random_start_time,
-        get_random_forecast_time,
-        OUTPUT_DIRECTORY
-    )
+    from reki_data_tool.postprocess.grid.gfs.ne.config import OUTPUT_DIRECTORY
+    from reki_data_tool.postprocess.grid.gfs.util import get_random_start_time, get_random_forecast_time
 
     start_time = get_random_start_time()
     start_time_label = start_time.strftime("%Y%m%d%H")

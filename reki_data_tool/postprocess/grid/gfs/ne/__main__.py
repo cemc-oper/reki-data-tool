@@ -4,11 +4,7 @@ from typing import Optional
 import typer
 import pandas as pd
 
-from reki_data_tool.postprocess.grid.gfs.ne.config import (
-    get_random_start_time,
-    get_random_forecast_time,
-)
-
+from reki_data_tool.postprocess.grid.gfs.util import get_random_start_time, get_random_forecast_time
 
 app = typer.Typer()
 
