@@ -4,6 +4,7 @@ import pandas as pd
 import typer
 from jinja2 import Environment, FileSystemLoader
 
+from reki.data_finder import find_local_file
 from reki_data_tool.postprocess.grid.gfs.ne.config import OUTPUT_DIRECTORY
 from reki_data_tool.postprocess.grid.gfs.util import get_random_start_time, get_random_forecast_time
 
@@ -130,6 +131,86 @@ def create_dask_v1_task(
             --output-file-path={output_file_path} \\
             --engine=mpi \\
             --batch-size={nodes*32}"""
+    )
+
+    task_script_content = template.render(**job_params)
+    with open(output_script_path, "w") as f:
+        f.write(task_script_content)
+
+    return output_script_path
+
+
+@app.command("gribpost")
+def create_gribpost_task(
+        output_script_path: Path = typer.Option(Path(OUTPUT_DIRECTORY, "01-gribpost", "cmd_tool_gribpost_v1.sh")),
+        partition: str = "serial"
+):
+    start_time = get_random_start_time()
+    start_time_label = start_time.strftime("%Y%m%d%H")
+    forecast_time = get_random_forecast_time()
+    forecast_time_label = f"{int(forecast_time / pd.Timedelta(hours=1)):03}"
+    print(start_time_label, forecast_time_label)
+
+    file_path = find_local_file(
+        "grapes_gfs_gmf/grib2/orig",
+        start_time=start_time,
+        forecast_time=forecast_time
+    )
+
+    output_directory = Path(OUTPUT_DIRECTORY, "01-gribpost")
+
+    file_loader = FileSystemLoader(Path(__file__).parent)
+    env = Environment(loader=file_loader)
+
+    template = env.get_template("01_gribpost.sh")
+
+    job_params = dict(
+        partition=partition,
+        job_name=output_script_path.stem,
+        run_dir=output_directory.absolute(),
+        origin_file_path=file_path.absolute(),
+        origin_file_name=file_path.name,
+        target_file_name=f'ne_{start_time_label}_{forecast_time_label}.grb2',
+    )
+
+    task_script_content = template.render(**job_params)
+    with open(output_script_path, "w") as f:
+        f.write(task_script_content)
+
+    return output_script_path
+
+
+@app.command("wgrib2")
+def create_gribpost_task(
+        output_script_path: Path = typer.Option(Path(OUTPUT_DIRECTORY, "02-wgrib2", "cmd_tool_wgrib2_v1.sh")),
+        partition: str = "serial"
+):
+    start_time = get_random_start_time()
+    start_time_label = start_time.strftime("%Y%m%d%H")
+    forecast_time = get_random_forecast_time()
+    forecast_time_label = f"{int(forecast_time / pd.Timedelta(hours=1)):03}"
+    print(start_time_label, forecast_time_label)
+
+    file_path = find_local_file(
+        "grapes_gfs_gmf/grib2/orig",
+        start_time=start_time,
+        forecast_time=forecast_time
+    )
+
+    output_directory = Path(OUTPUT_DIRECTORY, "02-wgrib2")
+
+    file_loader = FileSystemLoader(Path(__file__).parent)
+    env = Environment(loader=file_loader)
+
+    template = env.get_template("02_wgrib2.sh")
+
+    job_params = dict(
+        partition=partition,
+        job_name=output_script_path.stem,
+        run_dir=output_directory.absolute(),
+        origin_file_path=file_path.absolute(),
+        origin_file_name=file_path.name,
+        target_file_name=f'ne_{start_time_label}_{forecast_time_label}.grb2',
     )
 
     task_script_content = template.render(**job_params)

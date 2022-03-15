@@ -12,7 +12,7 @@ def get_message_bytes(
         count: int,
 ) -> bytes:
     """
-    从 GRIB2 文件中读取第 count 个要素场，裁剪区域，并返回新场的字节码
+    从 GRIB2 文件中读取第 count 个要素场，裁剪区域 (东北区域)，并返回新场的字节码
 
     Parameters
     ----------
@@ -23,6 +23,7 @@ def get_message_bytes(
     Returns
     -------
     bytes
+        重新编码后的 GRIB 2 消息字节码
     """
     message = load_message_from_file(file_path, count=count)
     message = extract_region(

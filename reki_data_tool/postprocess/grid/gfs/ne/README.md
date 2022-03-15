@@ -10,7 +10,11 @@
 
 ## 实现
 
-### 业务版本
+### 命令行程序
+
+#### gribpost.exe 版本
+
+当前业务版本
 
 ```bash
 ./gribpost.exe -s ./gmf.gra.${start_time}${forecast_hour}.grb2 \
@@ -19,6 +23,18 @@
     -dx 0.25 -dy 0.25 -nx 721 -ny 360 \
     -grib2 ./ne_gmf.gra.${start_time}${forecast_hour}.grb2
 ```
+
+00:07:51
+
+#### wgrib2 版本
+
+```bash
+wgrib2 ./gmf.gra.${start_time}${forecast_hour}.grb2  \
+    -small_grib 0:180 0.125:89.875 \
+     ./ne_gmf.gra.${start_time}${forecast_hour}.grb2
+```
+
+00:02:11
 
 ### 串行方法
 
