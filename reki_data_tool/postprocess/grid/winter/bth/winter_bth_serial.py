@@ -142,7 +142,7 @@ def get_fields(product, start_time, grib_orig_path):
     field = product["field"]
     forecast_time_list = pd.to_timedelta(np.arange(0, 25, 1), unit="h")
     field_bytes_list = []
-    for forecast_time in forecast_time_list:
+    for forecast_time in tqdm(forecast_time_list):
         file_name = get_grib2_file_name(start_time, forecast_time)
         # print(file_name)
         field_bytes = load_bytes_from_file(
@@ -154,10 +154,10 @@ def get_fields(product, start_time, grib_orig_path):
 
 
 def main():
-    start_time = "2021083100"
+    start_time = "2022030700"
 
-    grib_orig_path = "/g11/wangdp/project/work/data/playground/winter/grid/data/grib2-orig"
-    output_path = "/g11/wangdp/project/work/data/playground/winter/grid/output/serial"
+    grib_orig_path = "/g11/wangdp/project/work/data/playground/winter/grid-bth/data/2022030700/ORIG"
+    output_path = "/g11/wangdp/project/work/data/playground/winter/grid-bth/output/serial"
 
     start_time = pd.to_datetime(start_time, format="%Y%m%d%H")
 
@@ -167,11 +167,14 @@ def main():
 
         output_name = product["output"]["name"]
         output_file = Path(output_path, f"{output_name}.grb2")
-        print(output_file.absolute())
+        # print(output_file.absolute())
         with open(output_file, "wb") as f:
             for field_bytes in field_bytes_list:
                 f.write(field_bytes)
 
 
 if __name__ == "__main__":
+    start_time = pd.Timestamp.now()
     main()
+    end_time = pd.Timestamp.now()
+    print(end_time - start_time)
