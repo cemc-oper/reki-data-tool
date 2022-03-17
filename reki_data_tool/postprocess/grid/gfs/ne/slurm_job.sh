@@ -34,6 +34,11 @@ export PYTHONUNBUFFERED=1
 
 ulimit -s unlimited
 
+echo "enter work directory..."
+work_directory={{ work_directory }}
+test -d ${work_directory} || mkdir -p ${work_directory}
+cd ${work_directory}
+
 echo "run script..."
 date
 

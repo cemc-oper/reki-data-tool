@@ -14,7 +14,7 @@ app = typer.Typer()
 
 @app.command("serial")
 def create_serial_task(
-        output_script_path: Path = typer.Option(Path(OUTPUT_DIRECTORY, "gfs_ne_grib2_serial_case_1.sh"))
+        output_script_path: Path = typer.Option(Path(OUTPUT_DIRECTORY, "03-serial", "gfs_ne_grib2_serial_case_1.sh"))
 ):
     start_time = get_random_start_time()
     start_time_label = start_time.strftime("%Y%m%d%H")
@@ -53,19 +53,29 @@ def create_serial_task(
 
 @app.command("dask-v1")
 def create_dask_v1_task(
-        output_script_path: Path = typer.Option(Path(OUTPUT_DIRECTORY, "dask_v1_case_1.sh")),
+        output_script_path: Path = typer.Option(Path(OUTPUT_DIRECTORY, "11-dask-v1", "dask_v1_case_1.sh")),
+        work_directory: Path = typer.Option(Path(OUTPUT_DIRECTORY)),
+        start_time: str = typer.Option(None),
+        forecast_time: str = typer.Option(None),
         nodes: int = 1,
         partition: str = "normal"
 ):
-    start_time = get_random_start_time()
+    if start_time is None:
+        start_time = get_random_start_time()
+    else:
+        start_time = pd.to_datetime(start_time, format="%Y%m%d%H")
     start_time_label = start_time.strftime("%Y%m%d%H")
-    forecast_time = get_random_forecast_time()
+
+    if forecast_time is None:
+        forecast_time = get_random_forecast_time()
+    else:
+        forecast_time = pd.to_timedelta(forecast_time)
     forecast_time_label = f"{int(forecast_time / pd.Timedelta(hours=1)):03}"
+
     print(start_time_label, forecast_time_label)
 
-    output_directory = OUTPUT_DIRECTORY
     output_file_path = Path(
-        output_directory,
+        work_directory,
         f'ne_{start_time_label}_{forecast_time_label}.grb2'
     )
 
@@ -81,6 +91,7 @@ def create_dask_v1_task(
         nodes=nodes,
         ntasks_per_node=32,
         model_path="reki_data_tool.postprocess.grid.gfs.ne",
+        work_directory=work_directory.absolute(),
         options=f"""dask-v1 \\
             --start-time={start_time_label} \\
             --forecast-time={forecast_time_label}h \\
@@ -97,19 +108,29 @@ def create_dask_v1_task(
 
 @app.command("dask-v2")
 def create_dask_v1_task(
-        output_script_path: Path = typer.Option(Path(OUTPUT_DIRECTORY, "dask_v2_case_1.sh")),
+        output_script_path: Path = typer.Option(Path(OUTPUT_DIRECTORY, "12-dask-v2", "dask_v2_case_1.sh")),
+        work_directory: Path = typer.Option(Path(OUTPUT_DIRECTORY)),
+        start_time: str = typer.Option(None),
+        forecast_time: str = typer.Option(None),
         nodes: int = 4,
         partition: str = "normal"
 ):
-    start_time = get_random_start_time()
+    if start_time is None:
+        start_time = get_random_start_time()
+    else:
+        start_time = pd.to_datetime(start_time, format="%Y%m%d%H")
     start_time_label = start_time.strftime("%Y%m%d%H")
-    forecast_time = get_random_forecast_time()
+
+    if forecast_time is None:
+        forecast_time = get_random_forecast_time()
+    else:
+        forecast_time = pd.to_timedelta(forecast_time)
     forecast_time_label = f"{int(forecast_time / pd.Timedelta(hours=1)):03}"
+
     print(start_time_label, forecast_time_label)
 
-    output_directory = OUTPUT_DIRECTORY
     output_file_path = Path(
-        output_directory,
+        work_directory,
         f'ne_{start_time_label}_{forecast_time_label}.grb2'
     )
 
@@ -125,6 +146,7 @@ def create_dask_v1_task(
         nodes=nodes,
         ntasks_per_node=32,
         model_path="reki_data_tool.postprocess.grid.gfs.ne",
+        work_directory=work_directory.absolute(),
         options=f"""dask-v2 \\
             --start-time={start_time_label} \\
             --forecast-time={forecast_time_label}h \\
