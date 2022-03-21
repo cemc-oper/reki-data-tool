@@ -2,7 +2,7 @@ import operator
 
 
 # 层次条件
-levels = [
+LEVELS = [
     100.,
     150.,
     200.,
@@ -22,7 +22,7 @@ levels = [
 
 
 # 抽取变量场
-names = [
+NAMES = [
     {
         "field_name": "gh",
     },
@@ -42,8 +42,12 @@ names = [
         "field_name": "v",
     },
     {
-        "field_name": "w",
-        "data_source": "postvar",
+        # use postvar version
+        # "field_name": "w",
+        # "data_source": "postvar",
+
+        # use grib2 version
+        "field_name": "wz"
     },
     {
         "field_name": "snmr",
@@ -58,7 +62,7 @@ names = [
 
 
 # 输出要素场
-dataset_names = [
+DATASET_NAMES = [
     {
         "field_name": "gh",
         "name": "GH",
@@ -96,7 +100,7 @@ dataset_names = [
         "units": "m/s",
     },
     {
-        "field_name": "w",
+        "field_name": "wz",
         "name": "W",
         "long_name": "Vertical velocity (geometric)",
         "units": "m/s",
@@ -130,3 +134,17 @@ dataset_names = [
         ]
     }
 ]
+
+
+STATIONS = {
+    "54406": {
+        "point": {
+            "lat_index": 405,
+            "lon_index": 797
+        },
+        "section": {
+            "lat_index_range": (180, 861),
+            "lon_index_range": (520, 1221)
+        }
+    }
+}

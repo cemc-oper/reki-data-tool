@@ -1,6 +1,8 @@
 import typing
+import random
 
 import xarray as xr
+import pandas as pd
 
 
 def standard_station(
@@ -138,3 +140,9 @@ def change_coords_for_lon_section(
         "valid_time": "time",
         "longitude": "lon_9"
     })
+
+
+def get_random_start_time(freq="D") -> pd.Timestamp:
+    date_list = list(pd.date_range("2022-01-01", "2022-03-16", freq=freq))
+    random.shuffle(date_list)
+    return date_list[0]

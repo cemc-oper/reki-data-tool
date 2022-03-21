@@ -24,18 +24,20 @@ from reki_data_tool.postprocess.station.winter.meso1km.utils import (
     standard_lon_section,
 )
 
-from reki_data_tool.postprocess.station.winter.meso1km.condition import (
-    levels,
-    names,
-    dataset_names,
+from reki_data_tool.postprocess.station.winter.meso1km.common import (
+    LEVELS,
+    NAMES,
+    DATASET_NAMES,
 )
 
-import logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s][%(name)s][%(levelname)s] %(message)s'
-)
-logger = logging.getLogger(__name__)
+# import logging
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format='[%(asctime)s][%(name)s][%(levelname)s] %(message)s'
+# )
+# logger = logging.getLogger(__name__)
+from loguru import logger
+
 
 
 @click.command("generate-station")
@@ -80,7 +82,7 @@ def generate_station_in_dask(output_file, threads_per_worker):
 
     logger.info("loading fields from files...")
     data_list = dict()
-    for field_record in names:
+    for field_record in NAMES:
         data_source = field_record.get("data_source", "grib2")
         field_name = field_record["field_name"]
         stations = []
@@ -93,7 +95,7 @@ def generate_station_in_dask(output_file, threads_per_worker):
                     file_path,
                     parameter=field_name,
                     level_type="pl",
-                    level=levels
+                    level=LEVELS
                 )
                 # level_field = dask.delayed(extract_level)(field, levels)
                 field_station = dask.delayed(extract_domain)(field, station_lat_index, station_lon_index)
@@ -109,7 +111,7 @@ def generate_station_in_dask(output_file, threads_per_worker):
                     parameter=field_name,
                     level_type="pl",
                     forecast_time=forecast_hour,
-                    level=levels
+                    level=LEVELS
                 )
                 if field is None:
                     raise ValueError("field not found!")
@@ -131,7 +133,7 @@ def generate_station_in_dask(output_file, threads_per_worker):
 
     logger.info("generating dataset fields...")
     dataset_list = dict()
-    for record in dataset_names:
+    for record in DATASET_NAMES:
         name = record["name"]
         if "fields" not in record:
             field_name = record["field_name"]
