@@ -1,13 +1,13 @@
-import pathlib
+from pathlib import Path
+from typing import Union, List
 
 import xarray as xr
 import numpy as np
 import pandas as pd
-import click
 
 import dask
-from dask.distributed import Client, progress
-from dask_mpi import initialize
+from dask.distributed import progress
+from loguru import logger
 
 from reki.format.grib.eccodes import load_field_from_file as load_grib2_field_from_file
 from reki.format.grads import load_field_from_file as load_grads_field_from_file
@@ -28,57 +28,40 @@ from reki_data_tool.postprocess.station.winter.meso1km.common import (
     LEVELS,
     NAMES,
     DATASET_NAMES,
+    STATIONS
 )
-
-# import logging
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format='[%(asctime)s][%(name)s][%(levelname)s] %(message)s'
-# )
-# logger = logging.getLogger(__name__)
-from loguru import logger
+from reki_data_tool.utils import cal_run_time, create_dask_client
 
 
-
-@click.command("generate-station")
-@click.option("--output-file", help="output file path", required=True)
-@click.option("--threads-per-worker", default=1, help="thread count per worker")
-def generate_station_in_dask(output_file, threads_per_worker):
-    logger.info("initializing mpi...")
-    initialize(
-        interface="ib0",
-        nthreads=threads_per_worker,
-        dashboard=False,
-    )
+@cal_run_time
+def create_station_dask_v1(
+        output_file: Union[str, Path],
+        station_id: str,
+        start_time: pd.Timestamp,
+        grib2_files: List[Union[str, Path]],
+        postvar_file: Union[str, Path] = None,
+        engine: str = "local",
+        threads_per_worker: int = 1,
+        n_workers: int = None,
+):
+    logger.info(f"create dask client with engine {engine}...")
+    if engine == "local":
+        client_kwargs = dict(threads_per_worker=threads_per_worker, n_workers=n_workers)
+    else:
+        client_kwargs = dict()
+    client = create_dask_client(engine, client_kwargs=client_kwargs)
+    logger.info("create dask client with engine {engine}...done")
+    logger.info(f"client: {client}")
 
     logger.info("program begin")
 
-    start_time = "2021082512"
-
     # 站点信息
-    station_lat_index = 405
-    station_lon_index = 797
+    station_lat_index = STATIONS[station_id]["point"]["lat_index"]
+    station_lon_index = STATIONS[station_id]["point"]["lon_index"]
 
     # 剖面图范围
-    lat_index_range = (180, 861)
-    lon_index_range = (520, 1221)
-
-    logger.info("getting file list...")
-    grib2_data_path = pathlib.Path(
-        "/g11/wangdp/project/work/data/playground/station/ncl/data",
-        "grib2-orig"
-    )
-    grib2_files = list(grib2_data_path.glob("rmf.hgra.*.grb2"))
-    grib2_files = sorted(grib2_files)
-
-    postvar_file_path = pathlib.Path(
-        "/g11/wangdp/project/work/data/playground/station/ncl/data",
-        "postvar/postvar.ctl_202108251200000"
-    )
-
-    logger.debug("start client...")
-    client = Client()
-    print(client)
+    lat_index_range = STATIONS[station_id]["section"]["lat_index_range"]
+    lon_index_range = STATIONS[station_id]["section"]["lon_index_range"]
 
     logger.info("loading fields from files...")
     data_list = dict()
@@ -107,7 +90,7 @@ def generate_station_in_dask(output_file, threads_per_worker):
         elif data_source == "postvar":
             for forecast_hour in pd.to_timedelta(np.arange(0, 25, 1), unit="h"):
                 field = dask.delayed(load_grads_field_from_file)(
-                    postvar_file_path,
+                    postvar_file,
                     parameter=field_name,
                     level_type="pl",
                     forecast_time=forecast_hour,
@@ -161,7 +144,10 @@ def generate_station_in_dask(output_file, threads_per_worker):
 
     logger.info("run DAG...")
     result = t.persist()
-    progress(result)
+    if engine == "local":
+        progress(result)
+    else:
+        pass
 
     r = result.compute()
     logger.info("run DAG...done")
@@ -194,4 +180,32 @@ def generate_station_in_dask(output_file, threads_per_worker):
 
 
 if __name__ == "__main__":
-    generate_station_in_dask()
+    grib2_data_path = Path(
+        # "/g11/wangdp/project/work/data/playground/station/ncl/data",
+        # "grib2-orig"
+        "/g2/nwp_sp/OPER_ARCHIVE/GRAPES_MESO_1KM/Prod-grib/2022031300/ORIG"
+    )
+    grib2_files = list(grib2_data_path.glob("rmf.hgra.*.grb2"))
+    grib2_files = sorted(grib2_files)
+
+    # postvar_file_path = Path(
+    #     "/g11/wangdp/project/work/data/playground/station/ncl/data",
+    #     "postvar/postvar.ctl_202108251200000"
+    # )
+
+    station_id = "54406"
+
+    from reki_data_tool.postprocess.station.winter.meso1km.config import (
+        OUTPUT_DIRECTORY
+    )
+    output_file_path = Path(OUTPUT_DIRECTORY, f"station_{station_id}_11_dask_v1.nc")
+
+    create_station_dask_v1(
+        output_file=output_file_path,
+        station_id=station_id,
+        start_time=pd.to_datetime("2022-03-13 00:00:00"),
+        grib2_files=grib2_files,
+        postvar_file=None,
+        engine="local",
+        n_workers=4,
+    )

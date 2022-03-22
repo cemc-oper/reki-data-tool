@@ -58,8 +58,41 @@ def dask_v1(
         forecast_length: int = typer.Option(24),
         use_postvar: bool = False,
         output_file_path: Optional[Path] = typer.Option(None),
+        engine: str = "local"
 ):
-    pass
+    if start_time is None:
+        start_time = get_random_start_time()
+    else:
+        start_time = pd.to_datetime(start_time, format="%Y%m%d%H")
+
+    postvar_file = None
+    if use_postvar:
+        typer.echo("Don't support postvar")
+        raise typer.Exit()
+
+    grib2_files = []
+    for forecast_hour in range(0, forecast_length + 1):
+        grib2_data_path = find_local_file(
+            "cma_meso_1km/grib2/orig",
+            start_time=start_time,
+            forecast_time=pd.Timedelta(hours=forecast_hour),
+            data_class="smart2022",
+        )
+        if grib2_data_path is None:
+            typer.echo(f"file path not found: {start_time}")
+            raise typer.Exit()
+        grib2_files.append(grib2_data_path)
+
+    from reki_data_tool.postprocess.station.winter.meso1km.task_dask_v1 import create_station_dask_v1
+    create_station_dask_v1(
+        start_time=start_time,
+        output_file=output_file_path,
+        station_id=station_id,
+        grib2_files=grib2_files,
+        postvar_file=postvar_file,
+        engine=engine
+    )
+
 
 if __name__ == "__main__":
     app()
