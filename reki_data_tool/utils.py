@@ -91,7 +91,7 @@ def cal_run_time(func) -> Callable:
         start_time = pd.Timestamp.now()
         func(*args, **kwargs)
         end_time = pd.Timestamp.now()
-        print(end_time - start_time)
+        print("[cal_run_time] function run time:", end_time - start_time)
     return wrapper
 
 
