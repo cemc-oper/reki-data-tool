@@ -54,6 +54,7 @@ def create_dask_v1_task(
         output_script_path: Path = typer.Option(Path(OUTPUT_DIRECTORY, "11-dask-v1", "station_11_dask_v1_case_1.sh")),
         work_directory: Path = typer.Option(Path(OUTPUT_DIRECTORY)),
         nodes: int = 1,
+        ntasks_per_node: int = 32,
         partition: str = typer.Option("normal"),
         engine: str = typer.Option("mpi")
 ):
@@ -77,7 +78,7 @@ def create_dask_v1_task(
         is_parallel=True,
         partition=partition,
         nodes=nodes,
-        ntasks_per_node=32,
+        ntasks_per_node=ntasks_per_node,
         model_path="reki_data_tool.postprocess.station.winter.meso1km",
         options=f"""dask-v1 \\
             --station-id={station_id} \\

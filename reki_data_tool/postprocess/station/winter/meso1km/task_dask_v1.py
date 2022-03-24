@@ -147,7 +147,7 @@ def create_station_dask_v1(
     if engine == "local":
         progress(result)
     else:
-        pass
+        progress(result)
 
     r = result.compute()
     logger.info("run DAG...done")
