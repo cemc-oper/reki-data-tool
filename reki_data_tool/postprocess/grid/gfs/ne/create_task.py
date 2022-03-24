@@ -58,6 +58,7 @@ def create_dask_v1_task(
         start_time: str = typer.Option(None),
         forecast_time: str = typer.Option(None),
         nodes: int = 1,
+        ntasks_per_node: int = 32,
         partition: str = "normal"
 ):
     if start_time is None:
@@ -89,7 +90,7 @@ def create_dask_v1_task(
         is_parallel=True,
         partition=partition,
         nodes=nodes,
-        ntasks_per_node=32,
+        ntasks_per_node=ntasks_per_node,
         model_path="reki_data_tool.postprocess.grid.gfs.ne",
         work_directory=work_directory.absolute(),
         options=f"""dask-v1 \\

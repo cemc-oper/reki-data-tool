@@ -36,5 +36,32 @@ def test_dask_v1():
             ])
 
 
+def test_dask_v1_less_than_one_node():
+    nodes = 1
+    tasks_per_node_list = (1, 2, 4, 8, 16, 32)
+    count = 20
+    partition = "normal"
+
+    script_base_directory = Path(CASE_BASE_DIRECTORY, "script")
+
+    for tasks_per_node in tasks_per_node_list:
+        for test_index in range(1, count+1):
+            logger.info(f"create job script for TASKS {tasks_per_node} TEST {test_index}...")
+            script_path = Path(script_base_directory, f"task_{tasks_per_node:02}", f"test_{test_index:02}.cmd")
+            script_path.parent.mkdir(parents=True, exist_ok=True)
+
+            work_dir = Path(CASE_BASE_DIRECTORY, f"task_{tasks_per_node:02}", f"test_{test_index:02}")
+            work_dir.mkdir(parents=True, exist_ok=True)
+            result = runner.invoke(app, [
+                "dask-v1",
+                "--output-script-path", script_path.absolute(),
+                "--work-directory", work_dir.absolute(),
+                "--nodes", nodes,
+                "--ntasks-per-node", tasks_per_node,
+                "--partition", partition
+            ])
+            print(result)
+
+
 if __name__ == "__main__":
     test_dask_v1()
