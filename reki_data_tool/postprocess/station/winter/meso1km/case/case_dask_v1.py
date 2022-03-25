@@ -22,12 +22,13 @@ def test_dask_v1():
     script_base_directory = Path(CASE_BASE_DIRECTORY, "script")
 
     for node_count in nodes_list:
+        task_count = 32 * node_count - 2
         for test_index in range(1, count+1):
-            logger.info(f"create job script for NODE {node_count} TEST {test_index}...")
-            script_path = Path(script_base_directory, f"node_{node_count:02}", f"test_{test_index:02}.cmd")
+            logger.info(f"create job script for NODE {node_count} TASK {task_count} TEST {test_index}...")
+            script_path = Path(script_base_directory, f"node_n{node_count:02}t{task_count:03}", f"test_{test_index:02}.cmd")
             script_path.parent.mkdir(parents=True, exist_ok=True)
 
-            work_dir = Path(CASE_BASE_DIRECTORY, f"node_{node_count:02}", f"test_{test_index:02}")
+            work_dir = Path(CASE_BASE_DIRECTORY, f"node_n{node_count:02}t{task_count:03}", f"test_{test_index:02}")
             work_dir.mkdir(parents=True, exist_ok=True)
             result = runner.invoke(app, [
                 "dask-v1",
