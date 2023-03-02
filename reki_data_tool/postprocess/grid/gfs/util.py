@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -19,3 +20,19 @@ def get_random_forecast_time() -> pd.Timedelta:
     ])
     np.random.shuffle(forecast_list)
     return pd.Timedelta(hours=forecast_list[0])
+
+
+def parse_time_options(
+        start_time: Optional[str] = None,
+        forecast_time: Optional[str] = None
+) -> (pd.Timestamp, pd.Timedelta):
+    if start_time is None:
+        start_time = get_random_start_time()
+    else:
+        start_time = pd.to_datetime(start_time, format="%Y%m%d%H")
+
+    if forecast_time is None:
+        forecast_time = get_random_forecast_time()
+    else:
+        forecast_time = pd.to_timedelta(forecast_time)
+    return start_time, forecast_time
