@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import List, Optional, Union, Dict
+from pathlib import Path
 
 import eccodes
 import numpy as np
@@ -205,7 +206,7 @@ def get_parameters() -> List:
     return parameters
 
 
-def get_message_bytes(file_path, record) -> Optional[bytes]:
+def get_message_bytes(file_path: Union[Path, str], record: Dict) -> Optional[bytes]:
     m = load_message_from_file(file_path, **record)
     if m is None:
         return None

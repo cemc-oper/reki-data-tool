@@ -16,23 +16,16 @@ from reki_data_tool.postprocess.grid.gfs.wxzx.common import get_parameters
 
 
 @cal_run_time
-def create_wxzx_serial(
-        start_time: pd.Timestamp,
-        forecast_time: pd.Timedelta,
+def make_wxzx_data_serial(
+        input_file_path: Union[Path, str],
         output_file_path: Union[Path, str]
 ):
     logger.info("program begin")
     parameters = get_parameters()
 
-    file_path = find_local_file(
-        "grapes_gfs_gmf/grib2/orig",
-        start_time=start_time,
-        forecast_time=forecast_time
-    )
-
     with open(output_file_path, "wb") as f:
         for p in tqdm(parameters):
-            m = load_message_from_file(file_path, **p)
+            m = load_message_from_file(input_file_path, **p)
             if m is None:
                 continue
 
@@ -60,6 +53,13 @@ if __name__ == "__main__":
     forecast_time_label = f"{forecast_time/pd.Timedelta(hours=1):03}"
     print(start_time_label, forecast_time_label)
 
+    file_path = find_local_file(
+        "grapes_gfs_gmf/grib2/orig",
+        start_time=start_time,
+        forecast_time=forecast_time
+    )
+    print(file_path)
+
     output_directory = Path(OUTPUT_BASE_DIRECTORY, "02-serial")
     output_file_path = Path(
         output_directory,
@@ -67,4 +67,4 @@ if __name__ == "__main__":
     )
     print(output_file_path)
 
-    create_wxzx_serial(start_time, forecast_time, output_file_path)
+    make_wxzx_data_serial(file_path, output_file_path)

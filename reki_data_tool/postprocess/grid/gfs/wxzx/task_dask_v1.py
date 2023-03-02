@@ -3,36 +3,31 @@ from typing import Union
 
 import pandas as pd
 from loguru import logger
-from dask.distributed import Client
 
 from reki.data_finder import find_local_file
-from reki_data_tool.utils import cal_run_time
+from reki_data_tool.utils import cal_run_time, create_dask_client
 from reki_data_tool.postprocess.grid.gfs.wxzx.common import get_parameters, get_message_bytes
 
 
 @cal_run_time
-def create_wxzx_dask_v1(
-        start_time: pd.Timestamp,
-        forecast_time: pd.Timedelta,
-        output_file_path: Union[Path, str]
+def make_wxzx_data_by_dask_v1(
+        intput_file_path: Union[Path, str],
+        output_file_path: Union[Path, str],
+        engine: str = "local",
 ):
     logger.info("program begin")
     parameters = get_parameters()
 
-    file_path = find_local_file(
-        "grapes_gfs_gmf/grib2/orig",
-        start_time=start_time,
-        forecast_time=forecast_time
-    )
-
-    client = Client(
-        threads_per_worker=1,
-    )
+    if engine == "local":
+        client_kwargs = dict(threads_per_worker=1)
+    else:
+        client_kwargs = dict()
+    client = create_dask_client(engine, client_kwargs=client_kwargs)
     print(client)
 
     bytes_futures = []
     for record in parameters:
-        f = client.submit(get_message_bytes, file_path, record)
+        f = client.submit(get_message_bytes, intput_file_path, record)
         bytes_futures.append(f)
 
     # def get_object(l):
@@ -68,6 +63,13 @@ if __name__ == "__main__":
     forecast_time_label = f"{forecast_time/pd.Timedelta(hours=1):03}"
     print(start_time_label, forecast_time_label)
 
+    input_file_path = find_local_file(
+        "grapes_gfs_gmf/grib2/orig",
+        start_time=start_time,
+        forecast_time=forecast_time
+    )
+    print(input_file_path)
+
     output_directory = Path(OUTPUT_BASE_DIRECTORY, "11-dask-v1")
     output_file_path = Path(
         output_directory,
@@ -75,4 +77,4 @@ if __name__ == "__main__":
     )
     print(output_file_path)
 
-    create_wxzx_dask_v1(start_time, forecast_time, output_file_path)
+    make_wxzx_data_by_dask_v1(input_file_path, output_file_path)
