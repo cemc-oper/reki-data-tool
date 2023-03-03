@@ -11,10 +11,16 @@ from reki_data_tool.postprocess.grid.gfs.wxzx.common import get_parameters, get_
 
 @cal_run_time
 def make_wxzx_data_by_dask_v1(
-        intput_file_path: Union[Path, str],
+        input_file_path: Union[Path, str],
         output_file_path: Union[Path, str],
         engine: str = "local",
 ):
+    # close Heartbeat check, see the following page:
+    #
+    #   https://dask.discourse.group/t/dask-workers-killed-because-of-heartbeat-fail/856/3
+    from dask import config as cfg
+    cfg.set({'distributed.scheduler.worker-ttl': None})
+
     logger.info("program begin")
     parameters = get_parameters()
 
@@ -27,7 +33,7 @@ def make_wxzx_data_by_dask_v1(
 
     bytes_futures = []
     for record in parameters:
-        f = client.submit(get_message_bytes, intput_file_path, record)
+        f = client.submit(get_message_bytes, input_file_path, record)
         bytes_futures.append(f)
 
     # def get_object(l):
