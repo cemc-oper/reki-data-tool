@@ -1,4 +1,4 @@
-# GFS 东北半球数据
+# CMA-GFS 东北半球数据
 
 全要素场 + 保持原有顺序 + 区域裁剪
 
@@ -35,6 +35,8 @@ wgrib2 ./gmf.gra.${start_time}${forecast_hour}.grb2  \
 ```
 
 00:02:11
+
+注意：wgrib2 生成的数据南北反向，与 CMA-GFS 相反。
 
 ### 串行方法
 

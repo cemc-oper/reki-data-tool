@@ -22,9 +22,12 @@ from reki_data_tool.utils import cal_run_time, create_dask_client, get_message_c
 
 
 @cal_run_time
-def create_grib2_ne_dask_v1(
-        start_time: pd.Timestamp,
-        forecast_time: pd.Timedelta,
+def make_grib2_ne_dask_v1(
+        input_file_path: Union[Path, str],
+        start_longitude: Union[float, int],
+        end_longitude: Union[float, int],
+        start_latitude: Union[float, int],
+        end_latitude: Union[float, int],
         output_file_path: Union[Path, str],
         engine: str = "local",
 ):
@@ -37,22 +40,21 @@ def create_grib2_ne_dask_v1(
     logger.info("create dask client with engine {engine}...done")
     logger.info(f"client: {client}")
 
-    file_path = find_local_file(
-        "grapes_gfs_gmf/grib2/orig",
-        start_time=start_time,
-        forecast_time=forecast_time
-    )
-    logger.info(f"file path: {file_path}")
 
     logger.info("count...")
-    total_count = get_message_count(file_path)
+    total_count = get_message_count(input_file_path)
     logger.info("count..done")
 
     # 一次性分发任务，Future 按顺序保存到列表中
     logger.info("submit jobs...")
     bytes_futures = []
     for i in range(1, total_count+1):
-        f = client.submit(get_message_bytes, file_path, i)
+        f = client.submit(
+            get_message_bytes,
+            input_file_path,
+            start_longitude, end_longitude, start_latitude, end_latitude,
+            i
+        )
         bytes_futures.append(f)
     logger.info("submit jobs...done")
 
@@ -82,6 +84,13 @@ if __name__ == "__main__":
     forecast_time_label = f"{int(forecast_time / pd.Timedelta(hours=1)):03}"
     print(start_time_label, forecast_time_label)
 
+    input_file_path = find_local_file(
+        "grapes_gfs_gmf/grib2/orig",
+        start_time=start_time,
+        forecast_time=forecast_time
+    )
+    logger.info(f"file path: {input_file_path}")
+
     output_directory = OUTPUT_DIRECTORY
     output_file_path = Path(
         output_directory,
@@ -89,4 +98,8 @@ if __name__ == "__main__":
     )
     print(output_file_path)
 
-    create_grib2_ne_dask_v1(start_time, forecast_time, output_file_path)
+    make_grib2_ne_dask_v1(
+        input_file_path,
+        0, 180, 89.875, 0.125,
+        output_file_path
+    )

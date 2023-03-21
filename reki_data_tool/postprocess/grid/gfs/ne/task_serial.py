@@ -17,25 +17,30 @@ from reki_data_tool.utils import cal_run_time, get_message_count
 
 
 @cal_run_time
-def create_grib2_ne(
-        start_time: pd.Timestamp,
-        forecast_time: pd.Timedelta,
+def make_grib2_ne_serial(
+        input_file_path: Union[Path, str],
+        start_longitude: Union[float, int],
+        end_longitude: Union[float, int],
+        start_latitude: Union[float, int],
+        end_latitude: Union[float, int],
         output_file_path: Union[Path, str]
 ):
-    file_path = find_local_file(
-        "grapes_gfs_gmf/grib2/orig",
-        start_time=start_time,
-        forecast_time=forecast_time
-    )
 
     logger.info("count...")
-    total_count = get_message_count(file_path)
+    total_count = get_message_count(input_file_path)
     logger.info("count..done")
 
     logger.info("process...")
     with open(output_file_path, "wb") as f:
         for i in tqdm(range(1, total_count+1)):
-            message_bytes = get_message_bytes(file_path, count=i)
+            message_bytes = get_message_bytes(
+                input_file_path,
+                start_longitude=start_longitude,
+                end_longitude=end_longitude,
+                start_latitude=start_latitude,
+                end_latitude=end_latitude,
+                count=i
+            )
             f.write(message_bytes)
             del message_bytes
     logger.info("process...done")
@@ -51,6 +56,13 @@ if __name__ == "__main__":
     forecast_time_label = f"{forecast_time/pd.Timedelta(hours=1):03}"
     print(start_time_label, forecast_time_label)
 
+    input_file_path = find_local_file(
+        "grapes_gfs_gmf/grib2/orig",
+        start_time=start_time,
+        forecast_time=forecast_time
+    )
+    print(input_file_path)
+
     output_directory = OUTPUT_DIRECTORY
     output_file_path = Path(
         output_directory,
@@ -58,4 +70,8 @@ if __name__ == "__main__":
     )
     print(output_file_path)
 
-    create_grib2_ne(start_time, forecast_time, output_file_path)
+    make_grib2_ne_serial(
+        input_file_path,
+        0, 180, 89.875, 0.125,
+        output_file_path,
+    )
