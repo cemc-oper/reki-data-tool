@@ -1,18 +1,14 @@
 from pathlib import Path
 from typing import Union
 
-import numpy as np
 import pandas as pd
 
-import eccodes
 from tqdm.auto import tqdm
 from loguru import logger
 
 from reki.data_finder import find_local_file
-from reki.format.grib.eccodes import load_message_from_file
-from reki.format.grib.eccodes.operator import interpolate_grid
 from reki_data_tool.utils import cal_run_time
-from reki_data_tool.postprocess.grid.gfs.wxzx.common import get_parameters
+from reki_data_tool.postprocess.grid.gfs.wxzx.common import get_parameters, get_message_bytes
 
 
 @cal_run_time
@@ -25,20 +21,7 @@ def make_wxzx_data_serial(
 
     with open(output_file_path, "wb") as f:
         for p in tqdm(parameters):
-            m = load_message_from_file(input_file_path, **p)
-            if m is None:
-                continue
-
-            interpolate_grid(
-                m,
-                latitude=np.arange(45, -45, -0.28125),
-                longitude=np.arange(0, 360, 0.28125),
-                # bounds_error=False,
-                # fill_value=None,
-            )
-
-            b = eccodes.codes_get_message(m)
-            eccodes.codes_release(m)
+            b = get_message_bytes(input_file_path, p)
             f.write(b)
     logger.info("program done")
 
