@@ -27,7 +27,7 @@ def serial(
         )
 
     if input_file_path is None:
-        print("input file path is empty. Please set some options.")
+        print("input file path is empty. Please check options.")
         raise typer.Exit(code=2)
 
     make_wxzx_data_serial(
@@ -55,7 +55,7 @@ def dask_v1(
         )
 
     if input_file_path is None:
-        print("input file path is empty. Please set some options.")
+        print("input file path is empty. Please check options.")
         raise typer.Exit(code=2)
 
     make_wxzx_data_by_dask_v1(

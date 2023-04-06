@@ -29,7 +29,7 @@ def serial(
         )
 
     if input_file_path is None:
-        print("input file path is empty. Please set some options.")
+        print("input file path is empty. Please check options.")
         raise typer.Exit(code=2)
 
     start_longitude, end_longitude, start_latitude, end_latitude = parse_grid(longitude, latitude)
@@ -64,6 +64,10 @@ def dask_v1(
             start_time=start_time,
             forecast_time=forecast_time
         )
+
+    if input_file_path is None:
+        print("input file path is empty. Please check options.")
+        raise typer.Exit(code=2)
 
     start_longitude, end_longitude, start_latitude, end_latitude = parse_grid(longitude, latitude)
 
