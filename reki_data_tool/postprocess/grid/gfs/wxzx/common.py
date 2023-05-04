@@ -8,18 +8,31 @@ from reki.format.grib.eccodes import load_message_from_file
 from reki.format.grib.common import MISSING_VALUE
 from reki.format.grib.eccodes.operator import interpolate_grid
 
-VAR_GROUP_1 = [
+VAR_GROUP_1_1 = [
     {"parameter": "HGT"},
     {"parameter": "TMP"},
     {"parameter": "UGRD"},
     {"parameter": "VGRD"},
+]
+
+LEVEL_GROUP_1_1 = [
+    0.1, 0.2, 0.5, 1, 1.5, 2, 3, 4, 5, 7,
+    10, 20, 30, 50, 70, 100, 150,
+    200, 250, 300, 350, 400, 450, 500,
+    550, 600, 650, 700, 750, 800, 850,
+    900, 925, 950, 975, 1000
+]
+
+VAR_GROUP_1_2 = [
     {"parameter": "DZDT"},
     {"parameter": "RELV"},
     {"parameter": "RELD"},
     {"parameter": "SPFH"},
     {"parameter": "RH"}
 ]
-LEVEL_GROUP_1 = [
+
+
+LEVEL_GROUP_1_2 = [
     {"input": 10, "output": 0.1},
     {"input": 10, "output": 0.2},
     {"input": 10, "output": 0.5},
@@ -192,8 +205,8 @@ VAR_GROUP_6 = [
 
 def get_parameters() -> List:
     parameters = []
-    for variable in VAR_GROUP_1:
-        for level in LEVEL_GROUP_1:
+    for variable in VAR_GROUP_1_1:
+        for level in LEVEL_GROUP_1_1:
             if isinstance(level, Dict):
                 param = {
                     "input": {
@@ -205,7 +218,35 @@ def get_parameters() -> List:
                         {
                             "type": "set",
                             "keys": {
-                                "scaledValueOfFirstFixedSurface": level["output"]
+                                "scaledValueOfFirstFixedSurface": level["output"] * 100
+                            }
+                        }
+                    ]
+                }
+            else:
+                param = {
+                    "input": {
+                        **variable,
+                        "level": level,
+                        "level_type": "pl"
+                    }
+                }
+            parameters.append(param)
+
+    for variable in VAR_GROUP_1_2:
+        for level in LEVEL_GROUP_1_2:
+            if isinstance(level, Dict):
+                param = {
+                    "input": {
+                        **variable,
+                        "level": level["input"],
+                        "level_type": "pl"
+                    },
+                    "process": [
+                        {
+                            "type": "set",
+                            "keys": {
+                                "scaledValueOfFirstFixedSurface": level["output"] * 100
                             }
                         }
                     ]
