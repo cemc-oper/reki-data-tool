@@ -1,4 +1,5 @@
 from typing import Union, Tuple, Dict, List, Callable
+import os
 
 import eccodes
 import xarray as xr
@@ -117,9 +118,12 @@ def create_dask_client(engine: str = "local", client_kwargs: Dict = None) -> Cli
     elif engine == "mpi":
         from dask_mpi import initialize
         initialize(
+            nanny=False,
+            protocol='tcp',
             interface="ib0",
             dashboard=False,
-            nthreads=1
+            nthreads=1,
+            local_directory=os.getcwd()
         )
         client = Client(**client_kwargs)
     else:
