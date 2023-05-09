@@ -7,14 +7,14 @@ from reki_data_tool.postprocess.grid.gfs.wxzx.config import OUTPUT_BASE_DIRECTOR
 
 
 def main():
-    start_time = pd.to_datetime("2022-09-01 00:00")
+    start_time = pd.to_datetime("2023-04-19 12:00")
     start_time_label = start_time.strftime("%Y%m%d%H")
     forecast_time = pd.to_timedelta("6h")
     forecast_time_label = f"{int(forecast_time/pd.Timedelta(hours=1)):03}"
 
     input_file_path = (
         f"/g0/nwp_pd/NWP_CMA_GFS_GMF_POST_V2023_DATA/"
-        f"{start_time_label}/togrib2/output/grib2_orig/gmf.gra.{start_time_label}{forecast_time_label}.grb2"
+        f"{start_time_label}/data/output/grib2_orig/gmf.gra.{start_time_label}{forecast_time_label}.grb2"
     )
     print(input_file_path)
 
