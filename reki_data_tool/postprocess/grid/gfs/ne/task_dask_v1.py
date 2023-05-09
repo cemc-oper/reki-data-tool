@@ -69,9 +69,13 @@ def make_grib2_ne_dask_v1(
             del message_bytes
     logger.info("receive results and write to file...done")
 
+    logger.info("shutdown client...")
+    client.shutdown()
+    logger.info("shutdown client...done")
     logger.info("close client...")
     client.close()
     logger.info("close client...done")
+    logger.info("task is finished")
 
 
 if __name__ == "__main__":
