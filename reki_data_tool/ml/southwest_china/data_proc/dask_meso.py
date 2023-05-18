@@ -43,7 +43,7 @@ def create_serial(
 
 def main():
     date_list = pd.date_range(
-        "2021-10-01 00:00", "2021-12-31 23:59",
+        "2022-06-01 00:00", "2022-06-30 23:59",
         freq="12h",
     )
     forecast_hours = np.arange(0, 37, 6)

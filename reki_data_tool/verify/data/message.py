@@ -28,7 +28,8 @@ def get_message(
             file_path=data_path,
             parameter=parameter,
             level_type=level_type,
-            level=level
+            level=level,
+            look_parameter=False,
         )
     return message
 
@@ -43,13 +44,15 @@ def get_wind_message(
         file_path=data_path,
         parameter=parameter[0],
         level_type=level_type,
-        level=level
+        level=level,
+        look_parameter=False,
     )
     v_message = load_message_from_file(
         file_path=data_path,
         parameter=parameter[1],
         level_type=level_type,
-        level=level
+        level=level,
+        look_parameter=False,
     )
 
     return u_message, v_message

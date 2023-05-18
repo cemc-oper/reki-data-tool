@@ -87,7 +87,7 @@ def main():
     output_directory = "/g11/wangdp/project/work/data/playground/winter/eps_station_fdp/output"
     output_file_name = "station.csv"
 
-    start_time = pd.to_datetime("2021-09-12 00:00:00")
+    start_time = pd.to_datetime("2023-04-29 00:00:00")
 
     client = Client(
         threads_per_worker=1
@@ -175,7 +175,9 @@ def main():
 
     df = pd.DataFrame(record_list)
     print(df)
-    df.to_csv(Path(output_directory, output_file_name), index=False)
+    csv_file_path = Path(output_directory, output_file_name)
+    logger.info(f"saving table to {csv_file_path}")
+    df.to_csv(csv_file_path, index=False)
 
     logger.info("program end")
 

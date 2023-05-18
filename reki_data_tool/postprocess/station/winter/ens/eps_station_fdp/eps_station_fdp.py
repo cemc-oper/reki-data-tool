@@ -39,7 +39,7 @@ LOCATION = dict(
 
 def main():
     logger.info("program begin")
-    start_time = pd.to_datetime("2021-09-09 00:00:00")
+    start_time = pd.to_datetime("2023-04-29 00:00:00")
     record_list = []
 
     forecast_time_list = pd.to_timedelta(np.arange(3, 73, 3), unit="h")
