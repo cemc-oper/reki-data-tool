@@ -1,6 +1,6 @@
 # reki-data-tool
 
-使用 [nwpc-oper/reki](https://github.com/nwpc-oper/reki) 开发的数据处理测试项目。
+使用 [cemc-oper/reki](https://github.com/cemc-oper/reki) 开发的数据处理测试项目。
 
 包括：
 
@@ -10,6 +10,6 @@
 
 ## LICENSE
 
-Copyright &copy; 2020-2022, perillaroc at cemc-oper.
+Copyright &copy; 2020-2023, perillaroc at cemc-oper.
 
 `reki-data-tool` is licensed under [MIT](./LICENSE) license.
