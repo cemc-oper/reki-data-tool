@@ -4,7 +4,7 @@
 5 - 6 分钟
 """
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 import pandas as pd
 from loguru import logger
@@ -21,8 +21,10 @@ def make_grib2_ne_serial(
         input_file_path: Union[Path, str],
         start_longitude: Union[float, int],
         end_longitude: Union[float, int],
+        longitude_step: Optional[Union[float, int]],
         start_latitude: Union[float, int],
         end_latitude: Union[float, int],
+        latitude_step: Optional[Union[float, int]],
         output_file_path: Union[Path, str]
 ):
 
@@ -37,8 +39,10 @@ def make_grib2_ne_serial(
                 input_file_path,
                 start_longitude=start_longitude,
                 end_longitude=end_longitude,
+                longitude_step=longitude_step,
                 start_latitude=start_latitude,
                 end_latitude=end_latitude,
+                latitude_step=latitude_step,
                 count=i
             )
             f.write(message_bytes)
@@ -72,6 +76,6 @@ if __name__ == "__main__":
 
     make_grib2_ne_serial(
         input_file_path,
-        0, 180, 89.875, 0.125,
+        0, 180, 0.25, 89.875, 0.125, 0.25,
         output_file_path,
     )

@@ -9,7 +9,7 @@
 耗时：1 分钟 (登录节点测试)
 """
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 import pandas as pd
 
@@ -26,8 +26,10 @@ def make_grib2_ne_dask_v1(
         input_file_path: Union[Path, str],
         start_longitude: Union[float, int],
         end_longitude: Union[float, int],
+        longitude_step: Optional[Union[float, int]],
         start_latitude: Union[float, int],
         end_latitude: Union[float, int],
+        latitude_step: Optional[Union[float, int]],
         output_file_path: Union[Path, str],
         engine: str = "local",
 ):
@@ -52,7 +54,8 @@ def make_grib2_ne_dask_v1(
         f = client.submit(
             get_message_bytes,
             input_file_path,
-            start_longitude, end_longitude, start_latitude, end_latitude,
+            start_longitude, end_longitude, longitude_step,
+            start_latitude, end_latitude, latitude_step,
             i
         )
         bytes_futures.append(f)

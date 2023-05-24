@@ -32,14 +32,16 @@ def serial(
         print("input file path is empty. Please check options.")
         raise typer.Exit(code=2)
 
-    start_longitude, end_longitude, start_latitude, end_latitude = parse_grid(longitude, latitude)
+    start_longitude, end_longitude, longitude_step, start_latitude, end_latitude, latitude_step = parse_grid(longitude, latitude)
 
     make_grib2_ne_serial(
         input_file_path=input_file_path,
         start_longitude=start_longitude,
         end_longitude=end_longitude,
+        longitude_step=longitude_step,
         start_latitude=start_latitude,
         end_latitude=end_latitude,
+        latitude_step=latitude_step,
         output_file_path=output_file_path,
     )
 
@@ -69,14 +71,16 @@ def dask_v1(
         print("input file path is empty. Please check options.")
         raise typer.Exit(code=2)
 
-    start_longitude, end_longitude, start_latitude, end_latitude = parse_grid(longitude, latitude)
+    start_longitude, end_longitude, longitude_step, start_latitude, end_latitude, latitude_step = parse_grid(longitude, latitude)
 
     make_grib2_ne_dask_v1(
         input_file_path=input_file_path,
         start_longitude=start_longitude,
         end_longitude=end_longitude,
+        longitude_step=longitude_step,
         start_latitude=start_latitude,
         end_latitude=end_latitude,
+        latitude_step=latitude_step,
         output_file_path=output_file_path,
         engine=engine
     )
@@ -103,22 +107,32 @@ def dask_v2(
     )
 
 
-def parse_grid(longitude: str, latitude):
+def parse_grid(longitude: str, latitude: str):
     lon_tokens = longitude.split(":")
-    if len(lon_tokens) != 2:
-        raise ValueError("longitude must be start_longitude:end_longitude")
-    start_longitude = float(lon_tokens[0])
-    end_longitude = float(lon_tokens[1])
+    if len(lon_tokens) == 2:
+        start_longitude = float(lon_tokens[0])
+        end_longitude = float(lon_tokens[1])
+        longitude_step = None
+    elif len(lon_tokens) == 3:
+        start_longitude = float(lon_tokens[0])
+        end_longitude = float(lon_tokens[1])
+        longitude_step = float(lon_tokens[2])
+    else:
+        raise ValueError("longitude must be start_longitude:end_longitude or start_longitude:end_longitude:longitude_step")
 
     lat_tokens = latitude.split(":")
-    if len(lat_tokens) != 2:
-        raise ValueError("latitude must be start_latiitude:end_latitude")
-    start_latitude = float(lat_tokens[0])
-    end_latitude = float(lat_tokens[1])
+    if len(lat_tokens) == 2:
+        start_latitude = float(lat_tokens[0])
+        end_latitude = float(lat_tokens[1])
+        latitude_step = None
+    elif len(lat_tokens) == 3:
+        start_latitude = float(lat_tokens[0])
+        end_latitude = float(lat_tokens[1])
+        latitude_step = float(lat_tokens[2])
+    else:
+        raise ValueError("latitude must be start_latitude:end_latitude or start_latitude:end_latitude:latitude_step")
 
-    return start_longitude, end_longitude, start_latitude, end_latitude
-
-
+    return start_longitude, end_longitude, longitude_step, start_latitude, end_latitude, latitude_step
 
 
 if __name__ == "__main__":

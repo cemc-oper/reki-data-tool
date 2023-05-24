@@ -1,6 +1,6 @@
 # CMA-GFS 东北半球数据
 
-全要素场 + 保持原有顺序 + 区域裁剪
+全要素场 + 保持原有顺序 + 区域裁剪 + (可选插值)
 
 原任务：串行，6分钟
 
@@ -14,7 +14,7 @@
 
 #### gribpost.exe 版本
 
-当前业务版本
+当前业务版本（V3.3）
 
 ```bash
 ./gribpost.exe -s ./gmf.gra.${start_time}${forecast_hour}.grb2 \
