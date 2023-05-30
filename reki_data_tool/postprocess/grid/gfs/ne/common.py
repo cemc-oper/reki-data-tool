@@ -52,14 +52,24 @@ def get_message_bytes(
             end_latitude
         )
     elif latitude_step is not None and longitude_step is not None:
-        missing_value = MISSING_VALUE
-        message = interpolate_grid(
+        # missing_value = MISSING_VALUE
+        # message = interpolate_grid(
+        #     message,
+        #     latitude=np.arange(start_latitude, end_latitude + latitude_step, latitude_step),
+        #     longitude=np.arange(start_longitude, end_longitude + longitude_step, longitude_step),
+        #     bounds_error=False,
+        #     fill_value=missing_value,
+        #     scheme="linear"
+        # )
+        message = extract_region(
             message,
-            latitude=np.arange(start_latitude, end_latitude + latitude_step, latitude_step),
-            longitude=np.arange(start_longitude, end_longitude + longitude_step, longitude_step),
-            bounds_error=False,
-            fill_value=missing_value,
-            scheme="nearest"
+            # 0, 180, 89.875, 0.125
+            start_longitude,
+            end_longitude,
+            start_latitude,
+            end_latitude,
+            longitude_step=longitude_step,
+            latitude_step=latitude_step,
         )
     else:
         raise ValueError("longitude_step and latitude_step must be set together")
