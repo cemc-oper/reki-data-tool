@@ -18,11 +18,11 @@ setup(
 
     version=version,
 
-    description='A data tool using nwpc-oper/reki.',
+    description='A data tool using cemc-oper/reki.',
     long_description=long_description,
     long_description_content_type='text/markdown',
 
-    url='https://github.com/perillaroc/reki-data-tool',
+    url='https://github.com/cemc-oper/reki-data-tool',
 
     author='perillaroc',
     author_email='perillaroc@gmail.com',
@@ -33,9 +33,10 @@ setup(
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
     ],
 
     keywords='cemc data grib2',
