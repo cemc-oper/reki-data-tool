@@ -96,16 +96,22 @@ def cal_run_time(func) -> Callable:
     return wrapper
 
 
-def create_dask_client(engine: str = "local", client_kwargs: Dict = None) -> Client:
+def create_dask_client(
+        engine: str = "local",
+        client_kwargs: Dict = None
+) -> Client:
     """
     Create dask client with scheduler and workers.
 
     Parameters
     ----------
     engine
-        local or mpi (require dask_mpi)
-    client_kwargs
+        how to create dask workers:
 
+        * local
+        * mpi (require dask_mpi)
+    client_kwargs
+        used as args when create ``dask.distributed``
     Returns
     -------
     Client
@@ -118,14 +124,29 @@ def create_dask_client(engine: str = "local", client_kwargs: Dict = None) -> Cli
     elif engine == "mpi":
         from dask_mpi import initialize
         initialize(
-            nanny=False,
-            protocol='tcp',
+            # nanny=False,
+            # protocol='tcp',
             interface="ib0",
             dashboard=False,
             nthreads=1,
-            local_directory=os.getcwd()
+            # local_directory=os.getcwd()
+            local_directory=os.getenv('TMPDIR'),  # use ${TMPDIR} in HPC2023
+            # exit=False,
         )
         client = Client(**client_kwargs)
+
+        # use in SLURM.
+        # We expect SLURM_NTASKS workers
+        N = int(os.getenv('SLURM_NTASKS')) - 2
+
+        logger.info("wait for workers and report...")
+        client.wait_for_workers(n_workers=N)
+        logger.info("wait for workers and report...done")
+
+        num_workers = len(client.scheduler_info()['workers'])
+        logger.info("%d workers available and ready" % num_workers)
+        # print(client.scheduler_info())
+
     else:
         raise ValueError(f"engine is not supported: {engine}")
 
